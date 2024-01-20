@@ -1,0 +1,13 @@
+{
+  "author": [
+    "brunood"
+  ],
+  "min_bot_version": "",
+  "description": "Just a test cog.",
+  "install_msg": "Hey there, thanks for installing my cog! This cog should be pretty much plug and play, hope you enjoy it!",
+  "short": "Brunood's cog",
+  "name": "brunoodcog",
+  "disabled": false,
+  "requirements": [],
+  "tags": ["test"]
+}
