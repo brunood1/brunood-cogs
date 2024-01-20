@@ -23,7 +23,7 @@ class length(commands.Cog):
         ):
         if user is None:
             user = ctx.author
-            length = len(user.name)
+        length = len(user.name)
             
         # Create embed.
         embed = discord.Embed(colour=0xffffff)
