@@ -25,11 +25,11 @@ class length(commands.Cog):
             user = ctx.author
             length = len(user.name)
             
-            # Create embed.
-            embed = discord.Embed(colour=0xffffff)
-            embed.title = "User {}".format(user.name)
-            embed.add_field(name="Length", value=f"Your username has {length} characters", inline=False)
-            await ctx.reply(embed=embed, mention_author=False)
+        # Create embed.
+        embed = discord.Embed(colour=0xffffff)
+        embed.title = "User {}".format(user.name)
+        embed.add_field(name="Length", value=f"Your username has {length} characters", inline=False)
+        await ctx.reply(embed=embed, mention_author=False)
 
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
