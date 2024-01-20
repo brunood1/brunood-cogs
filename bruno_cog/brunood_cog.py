@@ -26,7 +26,7 @@ class length(commands.Cog):
             length = len(user.name)
             
             # Create embed.
-            embed = discord.Embed(colour="ffffff")
+            embed = discord.Embed(colour=0xffffff)
             embed.title = "User {}".format(user.name)
             embed.add_field(name="Length", value=f"Your username has {length} characters", inline=False)
             await ctx.reply(embed=embed, mention_author=False)
