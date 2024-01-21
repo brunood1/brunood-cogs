@@ -127,37 +127,30 @@ class Length(commands.Cog):
         ]
         
         mention = channel.mention
-        strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452)
+        
+        # DEFINING THE CATEGORIES BASED ON THEIR ID
+        strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
         national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
-        count = 0
-        if channel.name[0] != "🔴":
-            new_channel = []
-            new_channel.append(channel.id)
-            for i in range(len(idDataBase)):
-                if idDataBase[i][0] == new_channel[0]:
-                    new_channel.append(idDataBase[i][1])
-                    
-            x = national.text_channels
-            aux = []
-            for i in range(len(x)):
-                if channel.name.startswith("🔴"):
-                    count += 1
-                else:
-                    aux.append(x[i].id)
-        else:
-            new_channel = []
-            new_channel.append(channel.id)
-            for i in range(len(idDataBase)):
-                if idDataBase[i][0] == new_channel[0]:
-                    new_channel.append(idDataBase[i][1])
-                    
-            x = national.text_channels
-            aux = []
-            for i in range(len(x)):
-                if channel.name[0] == "🔴":
-                    aux.append(x[i].id)
+        count = 0 # WILL BE USED TO COUNT CHANNELS WITH 🔴
+        
+        # CREATES ARRAY WITH ID AND COUNTRY
+        new_channel = []
+        new_channel.append(channel.id)
+        for i in range(len(idDataBase)):
+            if idDataBase[i][0] == new_channel[0]:
+                new_channel.append(idDataBase[i][1])
+        
+        
+        x = national.text_channels # STORES ALL CHANNELS IN THE NAT. CATEGORY
+        aux = []
+        for i in range(len(x)):
+            if channel.name.startswith("🔴"):
+                count += 1 # COUNTS CHANNELS WITH 🔴
+            else:
+                aux.append(x[i].id) # SAVES THE IDS OF THE CHANNELS WITHOUT 🔴
             
+        # STORES ALL CHANNELS IN A MATRIX OF THE SAME STYLE AS THE DB
         current_channels = []
         for i in range(len(aux)):
             blank = []
@@ -168,7 +161,8 @@ class Length(commands.Cog):
             for j in range(len(idDataBase)):
                 if current_channels[i][0] == idDataBase[j][0]:
                     current_channels[i].append(idDataBase[j][1])
-            
+        
+        # DOES THE SAME FOR THE STOREHOUSE CHANNELS
         storehouse_channels = []
         for i in range(len(idDataBase)):
                 if idDataBase[i] not in current_channels:
@@ -176,9 +170,11 @@ class Length(commands.Cog):
             
 
         if status == "open":
+            # ADDS CHANNEL AND ORDERS IT
             current_channels.append(new_channel)
             current_channels.sort(key=lambda x: x[1])
 
+            # THE NEW CHANNEL INDEX
             index_current = current_channels.index(new_channel)
             index = index_current + count
             try:
@@ -203,6 +199,7 @@ class Length(commands.Cog):
         else:
             notice = ":x: Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
         await ctx.reply(notice, mention_author=False)
+        await ctx.reply(count, mention_author=False)
     
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
