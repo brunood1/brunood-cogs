@@ -38,7 +38,8 @@ class Length(commands.Cog):
     CHANNEL_RENAME = ":white_check_mark: Channel renamed to {}"
     CHANNEL_NO_PERMS = X + "I need Manage {} permissions in {} to change the name"
     CHANNEL_NO_NAME = X + "The new name can't be blank"
-        
+      
+    @commands.command()  
     async def channel_rename(
         self,
         ctx: commands.Context,
