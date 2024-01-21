@@ -146,6 +146,7 @@ class Length(commands.Cog):
                 else:
                     count += 1
         else:
+            count = 0
             new_channel = []
             new_channel.append(channel.id)
             for i in range(len(idDataBase)):
