@@ -10,10 +10,10 @@ class Length(commands.Cog):
     __author__ = "brunood"
     __red_end_user_data_statement__ = "No user data is stored by this cog."
     
-    X = ":x: Error: "
+    X = ":x: Error ::: "
 
     CHANNEL_RENAME = ":white_check_mark: Channel renamed to {}"
-    CHANNEL_NO_PERMS = X + "I need Manage {} permissions in {} to change the name"
+    CHANNEL_NO_PERMS = X + "I need Manage {} permissions in {}"
     CHANNEL_NO_NAME = X + "The new name can't be blank"
     ADD_RED_CIRCLE = ":white_check_mark: Added :red_circle: to {}"
     REMOVE_RED_CIRCLE = ":white_check_mark: Removed :red_circle: from {}"
@@ -41,7 +41,7 @@ class Length(commands.Cog):
         # Create embed.
         embed = discord.Embed(colour=0xffffff)
         embed.title = "User {}".format(user.name)
-        embed.add_field(name="Length", value=f"Your username has {length} characters", inline=False)
+        embed.add_field(name="Length", value="Your username has {} characters".format(length), inline=False)
         embed.set_thumbnail(url=user.display_avatar)
         await ctx.reply(embed=embed, mention_author=False)
      
@@ -84,7 +84,7 @@ class Length(commands.Cog):
         current = channel.name
         if channel.name.startswith("🔴"):
             try:
-                await channel.edit(name=f"{current[1:]}")
+                await channel.edit(name="{}".format(current[1:]))
                 await channel.move(end=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
@@ -93,7 +93,7 @@ class Length(commands.Cog):
                 notice = self.REMOVE_RED_CIRCLE.format(mention)
         else:
             try:
-                await channel.edit(name=f"🔴 {current}")
+                await channel.edit(name="🔴 {}".format(current))
                 await channel.move(beginning=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
@@ -109,6 +109,8 @@ class Length(commands.Cog):
         status: str,
         channel: discord.TextChannel
         ):
+        """Moves a channel to and from the storehouse"""
+        
         mention = channel.mention
         strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452)
         national = discord.utils.get(channel.guild.categories, id=1198307468523085885)
@@ -129,7 +131,7 @@ class Length(commands.Cog):
             else:
                 notice = self.MOVED_TO_STOREHOUSE.format(mention)
         else:
-            notice = ":x: ERROR Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
+            notice = ":x: Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
         await ctx.reply(notice)
     
     # Config
