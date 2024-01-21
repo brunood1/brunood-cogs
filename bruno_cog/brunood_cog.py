@@ -142,6 +142,7 @@ class Length(commands.Cog):
         
         x = national.text_channels # STORES ALL CHANNELS IN THE NAT. CATEGORY
         aux = []
+        count = 0 # WILL BE USED TO COUNT CHANNELS WITH 🔴
         for i in range(len(x)):
             if channel.name.startswith("🔴"):
                 count += 1 # COUNTS CHANNELS WITH 🔴
