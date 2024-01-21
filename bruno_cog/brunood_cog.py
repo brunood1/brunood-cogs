@@ -5,7 +5,7 @@ from redbot.core.bot import Red
 
 
 class length(commands.Cog):
-    """Spotify now playing"""
+    """Length of your username"""
 
     __author__ = "brunood"
     __red_end_user_data_statement__ = "No user data is stored by this cog."
@@ -29,6 +29,7 @@ class length(commands.Cog):
         embed = discord.Embed(colour=0xffffff)
         embed.title = "User {}".format(user.name)
         embed.add_field(name="Length", value=f"Your username has {length} characters", inline=False)
+        embed.set_thumbnail(url=user.display_avatar)
         await ctx.reply(embed=embed, mention_author=False)
 
     # Config
