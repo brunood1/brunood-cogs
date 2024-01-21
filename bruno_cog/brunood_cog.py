@@ -91,6 +91,18 @@ class Length(commands.Cog):
                 notice = self.ADD_RED_CIRCLE.format(mention)
         await ctx.reply(notice, mention_author=False)   
         
+    @commands.command()  
+    async def channel_category(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel | discord.Thread,
+        ):
+        """Adds or removes a red circle from a channel name"""
+        
+        mention = channel.mention
+        
+        await ctx.reply(f"{mention} is in the {channel.category} category", mention_author=False)   
+        
     
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
