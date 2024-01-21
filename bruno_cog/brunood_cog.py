@@ -45,13 +45,13 @@ class Length(commands.Cog):
         ctx: commands.Context,
         channel: discord.TextChannel | discord.Thread,
         *,
-        rename
+        rename: str
         ):
         """Renames a channel"""
         
         mention = channel.mention
         try:
-            await channel.edit(name={rename})
+            await channel.edit(name=rename)
         except discord.Forbidden:  # Manage channel perms required.
             perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
             notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
