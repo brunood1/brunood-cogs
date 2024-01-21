@@ -110,9 +110,11 @@ class Length(commands.Cog):
         channel: discord.TextChannel
         ):
         mention = channel.mention
+        strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452)
+        national = discord.utils.get(channel.guild.categories, id=1198307468523085885)
         if status == "open":
             try:
-                await channel.move(category=1198307468523085885, sync_permissions=True)
+                await channel.move(category=national, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
@@ -120,7 +122,7 @@ class Length(commands.Cog):
                 notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
             try:
-                await channel.move(category=1198407644021522452, sync_permissions=True)
+                await channel.move(category=strhouse, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
