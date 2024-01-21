@@ -130,8 +130,8 @@ class Length(commands.Cog):
         strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452)
         national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
+        count = 0
         if channel.name[0] != "🔴":
-            count = 0
             new_channel = []
             new_channel.append(channel.id)
             for i in range(len(idDataBase)):
@@ -141,12 +141,11 @@ class Length(commands.Cog):
             x = national.text_channels
             aux = []
             for i in range(len(x)):
-                if channel.name[0] != "🔴":
-                    aux.append(x[i].id)
-                else:
+                if channel.name.startswith("🔴"):
                     count += 1
+                else:
+                    aux.append(x[i].id)
         else:
-            count = 0
             new_channel = []
             new_channel.append(channel.id)
             for i in range(len(idDataBase)):
