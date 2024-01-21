@@ -144,7 +144,7 @@ class Length(commands.Cog):
         aux = []
         ongoing = []
         for i in range(len(x)):
-            if channel.name.startswith("🔴"):
+            if x[i].name.startswith("🔴"):
                 ongoing.append(x[i])
             else:
                 aux.append(x[i].id) # SAVES THE IDS OF THE CHANNELS WITHOUT 🔴
