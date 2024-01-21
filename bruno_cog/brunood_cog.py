@@ -142,10 +142,10 @@ class Length(commands.Cog):
         
         x = national.text_channels # STORES ALL CHANNELS IN THE NAT. CATEGORY
         aux = []
-        count = 0 # WILL BE USED TO COUNT CHANNELS WITH 🔴
+        ongoing = []
         for i in range(len(x)):
             if channel.name.startswith("🔴"):
-                count += 1 # COUNTS CHANNELS WITH 🔴
+                ongoing.append(x[i])
             else:
                 aux.append(x[i].id) # SAVES THE IDS OF THE CHANNELS WITHOUT 🔴
             
@@ -175,7 +175,7 @@ class Length(commands.Cog):
 
             # THE NEW CHANNEL INDEX
             index_current = current_channels.index(new_channel)
-            index = index_current + count
+            index = index_current + len(ongoing)
             try:
                 await channel.move(beginning=True, offset=index, category=national, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
@@ -198,7 +198,6 @@ class Length(commands.Cog):
         else:
             notice = ":x: Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
         await ctx.reply(notice, mention_author=False)
-        await ctx.reply(count, mention_author=False)
     
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
