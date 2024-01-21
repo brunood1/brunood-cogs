@@ -73,13 +73,14 @@ class Length(commands.Cog):
         mention = channel.mention
         current = channel.name
         try:
-            await channel.edit(name=f":red_circle: {current}")
+            await channel.edit(name=f"🔴 {current}")
         except discord.Forbidden:  # Manage channel perms required.
             perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
             notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
         else:
             notice = self.RED_CIRCLE.format(mention)
         await ctx.reply(notice, mention_author=False)   
+        
     
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
