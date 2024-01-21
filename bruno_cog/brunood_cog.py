@@ -85,6 +85,7 @@ class Length(commands.Cog):
         if channel.name.startswith("🔴"):
             try:
                 await channel.edit(name=f"{current[1:]}")
+                await channel.move(end=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
@@ -111,7 +112,7 @@ class Length(commands.Cog):
         mention = channel.mention
         if status == "open":
             try:
-                await channel.move(category="1198307468523085885", sync_permissions=True)
+                await channel.move(category=1198307468523085885, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
@@ -119,7 +120,7 @@ class Length(commands.Cog):
                 notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
             try:
-                await channel.move(category="1198407644021522452", sync_permissions=True)
+                await channel.move(category=1198407644021522452, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
