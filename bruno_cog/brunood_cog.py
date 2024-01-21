@@ -17,12 +17,16 @@ class Length(commands.Cog):
     CHANNEL_NO_NAME = X + "The new name can't be blank"
     ADD_RED_CIRCLE = ":white_check_mark: Added :red_circle: to {}"
     REMOVE_RED_CIRCLE = ":white_check_mark: Removed :red_circle: from {}"
+    MOVED_FROM_STOREHOUSE = "Moved {} from the storehouse"
+    MOVED_TO_STOREHOUSE = "Moved {} to the storehouse"
 
     def __init__(self, bot: Red):
         super().__init__()
         self.bot = bot
 
     # Commands
+    
+    # returns an embed with your profile picture and the length of your username
     @commands.command()
     async def length(
         self, 
@@ -40,7 +44,9 @@ class Length(commands.Cog):
         embed.add_field(name="Length", value=f"Your username has {length} characters", inline=False)
         embed.set_thumbnail(url=user.display_avatar)
         await ctx.reply(embed=embed, mention_author=False)
-      
+     
+    
+    # renames a channel 
     @commands.command()  
     async def channel_rename(
         self,
@@ -63,6 +69,9 @@ class Length(commands.Cog):
                 notice = self.CHANNEL_RENAME.format(rename)
         await ctx.reply(notice, mention_author=False)
     
+    # adds or removes a red circle for national final channels
+    # IDEA: make it move to the top and then back down
+    # PROBLEM: the channels are ordered alphabetically by country
     @commands.command()  
     async def red_circle(
         self,
@@ -84,25 +93,41 @@ class Length(commands.Cog):
         else:
             try:
                 await channel.edit(name=f"🔴 {current}")
+                await channel.move(beginning=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
             else:
                 notice = self.ADD_RED_CIRCLE.format(mention)
-        await ctx.reply(notice, mention_author=False)   
+        await ctx.reply(notice, mention_author=False) 
         
-    @commands.command()  
-    async def channel_category(
+    @commands.command
+    async def storehouse(
         self,
         ctx: commands.Context,
-        channel: discord.TextChannel | discord.Thread,
+        status: str,
+        channel: discord.TextChannel
         ):
-        """Adds or removes a red circle from a channel name"""
-        
         mention = channel.mention
-        
-        await ctx.reply(f"{mention} is in the {channel.category} category", mention_author=False)   
-        
+        if status == "open":
+            try:
+                await channel.move(category="1198307468523085885", sync_permissions=True)
+            except discord.Forbidden:  # Manage channel perms required.
+                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+            else:
+                notice = self.MOVED_FROM_STOREHOUSE.format(mention)
+        elif status == "close":
+            try:
+                await channel.move(category="1198407644021522452", sync_permissions=True)
+            except discord.Forbidden:  # Manage channel perms required.
+                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+            else:
+                notice = self.MOVED_TO_STOREHOUSE.format(mention)
+        else:
+            notice = "you can only open or close a channel"
+        await ctx.reply(notice)
     
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
