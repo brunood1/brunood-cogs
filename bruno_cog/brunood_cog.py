@@ -13,12 +13,18 @@ class Length(commands.Cog):
     X = ":x: Error ::: "
 
     CHANNEL_RENAME = ":white_check_mark: Channel renamed to {}"
-    CHANNEL_NO_PERMS = X + "I need Manage {} permissions in {}"
+    CHANNEL_NO_PERMS = X + "I need 'Manage {}' permissions in {}"
     CHANNEL_NO_NAME = X + "The new name can't be blank"
     ADD_RED_CIRCLE = ":white_check_mark: Added :red_circle: to {}"
     REMOVE_RED_CIRCLE = ":white_check_mark: Removed :red_circle: from {}"
     MOVED_FROM_STOREHOUSE = "Moved {} from the storehouse"
     MOVED_TO_STOREHOUSE = "Moved {} to the storehouse"
+    
+    idDataBase = [
+        [1198634448531496980, "finland"],
+        [1198634861641089146, "netherlands"],
+        [1198634389551206420, "slovakia"]
+    ]
 
     def __init__(self, bot: Red):
         super().__init__()
@@ -85,7 +91,7 @@ class Length(commands.Cog):
         if channel.name.startswith("🔴"):
             try:
                 await channel.edit(name="{}".format(current[1:]))
-                await channel.move(end=True)
+                # await channel.move(end=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
@@ -94,7 +100,7 @@ class Length(commands.Cog):
         else:
             try:
                 await channel.edit(name="🔴 {}".format(current))
-                await channel.move(beginning=True)
+                # await channel.move(beginning=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
@@ -111,20 +117,59 @@ class Length(commands.Cog):
         ):
         """Moves a channel to and from the storehouse"""
         
+        idDataBase = [
+            [1198635880370405477, "albania"],
+            [1198634448531496980, "finland"],
+            [1198634861641089146, "netherlands"],
+            [1198634389551206420, "slovakia"]
+        ]
+        
         mention = channel.mention
         strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452)
-        national = discord.utils.get(channel.guild.categories, id=1198307468523085885)
+        national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
+        
+        new_channel = []
+        new_channel.append(channel.id)
+        for i in range(len(idDataBase)):
+            if idDataBase[i][0] == new_channel[0]:
+                new_channel.append(idDataBase[i][1])
+                
+        aux = national.text_channels.id
+        current_channels = []
+        for i in range(len(aux)):
+            blank = []
+            blank.append(aux[i])
+            current_channels.append(blank)
+            
+        for i in range(len(current_channels)):
+            for j in range(len(idDataBase)):
+                if current_channels[i][0] == idDataBase[j][0]:
+                    current_channels[i].append(idDataBase[j][1])
+            
+        storehouse_channels = []
+        for i in range(len(idDataBase)):
+                if idDataBase[i] not in current_channels:
+                    storehouse_channels.append(idDataBase[i])
+
         if status == "open":
             try:
-                await channel.move(end=True, category=national, sync_permissions=True)
+                current_channels.append(new_channel)
+                current_channels.sort(key=lambda x: x[1])
+
+                index_current = current_channels.index(new_channel)
+                await channel.move(beginning=True, offset=index_current, category=national, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
             else:
                 notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
+            storehouse_channels.append(new_channel)
+            storehouse_channels.sort(key=lambda x: x[1])
+
+            index_storehouse = storehouse_channels.index(new_channel)
             try:
-                await channel.move(end=True, category=strhouse, sync_permissions=True)
+                await channel.move(beginning=True, offset=index_storehouse, category=strhouse, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
@@ -138,3 +183,5 @@ class Length(commands.Cog):
     async def red_delete_data_for_user(self, *, _requester, _user_id):
         """Do nothing, as no user data is stored."""
         pass
+
+    
