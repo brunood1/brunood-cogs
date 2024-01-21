@@ -134,7 +134,10 @@ class Length(commands.Cog):
             if idDataBase[i][0] == new_channel[0]:
                 new_channel.append(idDataBase[i][1])
                 
-        aux = national.text_channels.id
+        x = national.text_channels
+        aux = []
+        for i in range(len(x)):
+            aux.append(x[i].id)
         current_channels = []
         for i in range(len(aux)):
             blank = []
