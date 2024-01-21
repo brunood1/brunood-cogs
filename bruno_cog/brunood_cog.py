@@ -101,7 +101,7 @@ class Length(commands.Cog):
                 notice = self.ADD_RED_CIRCLE.format(mention)
         await ctx.reply(notice, mention_author=False) 
         
-    @commands.command
+    @commands.command()
     async def storehouse(
         self,
         ctx: commands.Context,
@@ -126,7 +126,7 @@ class Length(commands.Cog):
             else:
                 notice = self.MOVED_TO_STOREHOUSE.format(mention)
         else:
-            notice = "you can only open or close a channel"
+            notice = ":x: ERROR Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
         await ctx.reply(notice)
     
     # Config
