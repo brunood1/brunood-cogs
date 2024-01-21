@@ -4,8 +4,8 @@ from redbot.core import commands
 from redbot.core.bot import Red
 
 
-class length(commands.Cog):
-    """Length of your username"""
+class Length(commands.Cog):
+    """Get the length of a username"""
 
     __author__ = "brunood"
     __red_end_user_data_statement__ = "No user data is stored by this cog."
@@ -21,6 +21,7 @@ class length(commands.Cog):
         ctx: commands.Context, 
         user: discord.Member = None
         ):
+        """Returns the length of a username"""
         if user is None:
             user = ctx.author
         length = len(user.name)
