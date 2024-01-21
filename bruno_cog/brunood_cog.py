@@ -15,7 +15,8 @@ class Length(commands.Cog):
     CHANNEL_RENAME = ":white_check_mark: Channel renamed to {}"
     CHANNEL_NO_PERMS = X + "I need Manage {} permissions in {} to change the name"
     CHANNEL_NO_NAME = X + "The new name can't be blank"
-    RED_CIRCLE = ":white_check_mark: Added :red_circle: to {}"
+    ADD_RED_CIRCLE = ":white_check_mark: Added :red_circle: to {}"
+    REMOVE_RED_CIRCLE = ":white_check_mark: Removed :red_circle: from {}"
 
     def __init__(self, bot: Red):
         super().__init__()
@@ -68,17 +69,26 @@ class Length(commands.Cog):
         ctx: commands.Context,
         channel: discord.TextChannel | discord.Thread,
         ):
-        """Adds a red circle to indicate a show is ongoing"""
+        """Adds or removes a red circle from a channel name"""
         
         mention = channel.mention
         current = channel.name
-        try:
-            await channel.edit(name=f"🔴 {current}")
-        except discord.Forbidden:  # Manage channel perms required.
-            perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
-            notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+        if channel.name.startswith("🔴"):
+            try:
+                await channel.edit(name=f"{current[1:]}")
+            except discord.Forbidden:  # Manage channel perms required.
+                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+            else:
+                notice = self.REMOVE_RED_CIRCLE.format(mention)
         else:
-            notice = self.RED_CIRCLE.format(mention)
+            try:
+                await channel.edit(name=f"🔴 {current}")
+            except discord.Forbidden:  # Manage channel perms required.
+                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+            else:
+                notice = self.ADD_RED_CIRCLE.format(mention)
         await ctx.reply(notice, mention_author=False)   
         
     
