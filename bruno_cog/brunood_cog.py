@@ -180,7 +180,7 @@ class Length(commands.Cog):
                 notice = self.MOVED_TO_STOREHOUSE.format(mention)
         else:
             notice = ":x: Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
-        await ctx.reply(notice)
+        await ctx.reply(notice, mention_author=False)
     
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
