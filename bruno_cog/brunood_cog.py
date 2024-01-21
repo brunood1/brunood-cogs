@@ -132,8 +132,6 @@ class Length(commands.Cog):
         strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
         national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
-        count = 0 # WILL BE USED TO COUNT CHANNELS WITH 🔴
-        
         # CREATES ARRAY WITH ID AND COUNTRY
         new_channel = []
         new_channel.append(channel.id)
