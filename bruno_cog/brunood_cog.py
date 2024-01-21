@@ -1,5 +1,6 @@
 # Required by Red.
 import discord
+import typing
 from redbot.core import commands
 from redbot.core.bot import Red
 
@@ -119,6 +120,7 @@ class Length(commands.Cog):
         
         idDataBase = [
             [1198635880370405477, "albania"],
+            [1198695703761932468, "brazil"],
             [1198634448531496980, "finland"],
             [1198634861641089146, "netherlands"],
             [1198634389551206420, "slovakia"]
@@ -128,16 +130,34 @@ class Length(commands.Cog):
         strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452)
         national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
-        new_channel = []
-        new_channel.append(channel.id)
-        for i in range(len(idDataBase)):
-            if idDataBase[i][0] == new_channel[0]:
-                new_channel.append(idDataBase[i][1])
-                
-        x = national.text_channels
-        aux = []
-        for i in range(len(x)):
-            aux.append(x[i].id)
+        if channel.name[0] != "🔴":
+            count = 0
+            new_channel = []
+            new_channel.append(channel.id)
+            for i in range(len(idDataBase)):
+                if idDataBase[i][0] == new_channel[0]:
+                    new_channel.append(idDataBase[i][1])
+                    
+            x = national.text_channels
+            aux = []
+            for i in range(len(x)):
+                if channel.name[0] != "🔴":
+                    aux.append(x[i].id)
+                else:
+                    count += 1
+        else:
+            new_channel = []
+            new_channel.append(channel.id)
+            for i in range(len(idDataBase)):
+                if idDataBase[i][0] == new_channel[0]:
+                    new_channel.append(idDataBase[i][1])
+                    
+            x = national.text_channels
+            aux = []
+            for i in range(len(x)):
+                if channel.name[0] == "🔴":
+                    aux.append(x[i].id)
+            
         current_channels = []
         for i in range(len(aux)):
             blank = []
@@ -153,14 +173,16 @@ class Length(commands.Cog):
         for i in range(len(idDataBase)):
                 if idDataBase[i] not in current_channels:
                     storehouse_channels.append(idDataBase[i])
+            
 
         if status == "open":
-            try:
-                current_channels.append(new_channel)
-                current_channels.sort(key=lambda x: x[1])
+            current_channels.append(new_channel)
+            current_channels.sort(key=lambda x: x[1])
 
-                index_current = current_channels.index(new_channel)
-                await channel.move(beginning=True, offset=index_current, category=national, sync_permissions=True)
+            index_current = current_channels.index(new_channel)
+            index = index_current + count
+            try:
+                await channel.move(beginning=True, offset=index, category=national, sync_permissions=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
