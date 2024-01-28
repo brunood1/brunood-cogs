@@ -272,7 +272,26 @@ class Length(commands.Cog):
                     notice = self.ADD_RED_CIRCLE.format(mention)
             await ctx.reply(notice, mention_author=False)
         else:
-            self.red_circle_logic(ctx, channel)
+            current = channel.name
+            if channel.name.startswith("🔴"):
+                try:
+                    await channel.edit(name="{}".format(current[1:]))
+                    # await channel.move(end=True)
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.REMOVE_RED_CIRCLE.format(mention)
+            else:
+                try:
+                    await channel.edit(name="🔴 {}".format(current))
+                    # await channel.move(beginning=True)
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.ADD_RED_CIRCLE.format(mention)
+            await ctx.reply(notice, mention_author=False) 
             
     
     async def red_circle_logic(
@@ -285,6 +304,7 @@ class Length(commands.Cog):
         if channel.name.startswith("🔴"):
             try:
                 await channel.edit(name="{}".format(current[1:]))
+                # await channel.move(end=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
@@ -293,6 +313,7 @@ class Length(commands.Cog):
         else:
             try:
                 await channel.edit(name="🔴 {}".format(current))
+                # await channel.move(beginning=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
