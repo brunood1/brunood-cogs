@@ -162,8 +162,14 @@ class Length(commands.Cog):
                 notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
             if channel.name.startswith("🔴"):
-                self.red_circle_logic(ctx, channel)
-
+                try:
+                    await channel.edit(name="{}".format(channel.name[1:]))
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.REMOVE_RED_CIRCLE.format(mention)
+                    
             storehouse_channels.append(new_channel)
             storehouse_channels.sort(key=lambda x: x[1])
 
