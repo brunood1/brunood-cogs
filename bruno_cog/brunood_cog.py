@@ -84,7 +84,7 @@ class Length(commands.Cog):
         ):
         """Adds or removes a red circle from a channel name"""
         
-        await self.red_circle_logic(self, ctx, channel)
+        await self.red_circle_logic(ctx, channel)
         
     @commands.command()
     async def storehouse(
