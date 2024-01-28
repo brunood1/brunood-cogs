@@ -161,7 +161,9 @@ class Length(commands.Cog):
             else:
                 notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
-            
+            if channel.name.startswith("🔴"):
+                self.red_circle_logic(ctx, channel)
+
             storehouse_channels.append(new_channel)
             storehouse_channels.sort(key=lambda x: x[1])
 
@@ -176,7 +178,9 @@ class Length(commands.Cog):
         else:
             notice = ":x: Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
         await ctx.reply(notice, mention_author=False)
-        
+    
+    
+    # IDEA: if this is run on a storehouse channel, first move up then add circle
     @commands.command()  
     async def red_circle_new(
         self,
