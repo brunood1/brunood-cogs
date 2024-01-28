@@ -76,38 +76,19 @@ class Length(commands.Cog):
                 notice = self.CHANNEL_RENAME.format(rename)
         await ctx.reply(notice, mention_author=False)
     
-    # adds or removes a red circle for national final channels
-    # IDEA: make it move to the top and then back down
-    # PROBLEM: the channels are ordered alphabetically by country
-    @commands.command()  
-    async def red_circle(
+    @commands.command(name="red_circle")  
+    async def red_circle_cmd(
         self,
         ctx: commands.Context,
         channel: discord.TextChannel | discord.Thread,
         ):
         """Adds or removes a red circle from a channel name"""
         
-        mention = channel.mention
-        current = channel.name
-        if channel.name.startswith("🔴"):
-            try:
-                await channel.edit(name="{}".format(current[1:]))
-                # await channel.move(end=True)
-            except discord.Forbidden:  # Manage channel perms required.
-                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
-                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
-            else:
-                notice = self.REMOVE_RED_CIRCLE.format(mention)
-        else:
-            try:
-                await channel.edit(name="🔴 {}".format(current))
-                # await channel.move(beginning=True)
-            except discord.Forbidden:  # Manage channel perms required.
-                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
-                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
-            else:
-                notice = self.ADD_RED_CIRCLE.format(mention)
-        await ctx.reply(notice, mention_author=False) 
+        await red_circle_logic(
+            self,
+            ctx: commands.Context,
+            channel: discord.TextChannel | discord.Thread,
+            ):
         
     @commands.command()
     async def storehouse(
@@ -184,6 +165,7 @@ class Length(commands.Cog):
             else:
                 notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
+            
             storehouse_channels.append(new_channel)
             storehouse_channels.sort(key=lambda x: x[1])
 
@@ -200,7 +182,7 @@ class Length(commands.Cog):
         await ctx.reply(notice, mention_author=False)
         
     @commands.command()  
-    async def red_circle_m(
+    async def red_circle_new(
         self,
         ctx: commands.Context,
         channel: discord.TextChannel | discord.Thread,
@@ -216,81 +198,129 @@ class Length(commands.Cog):
         ]
         
         mention = channel.mention
-        
-        
-        # CREATES ARRAY WITH ID AND COUNTRY
-        new_channel = []
-        new_channel.append(channel.id)
-        for i in range(len(idDataBase)):
-            if idDataBase[i][0] == new_channel[0]:
-                new_channel.append(idDataBase[i][1])
-        
-        
-        x = channel.category.text_channels
-        aux = []
-        aux_red = []
-        for i in range(len(x)):
-            if x[i].name.startswith("🔴"):
-                aux_red.append(x[i].id)
+        if channel.id in idDataBase[:,0]:
+            # CREATES ARRAY WITH ID AND COUNTRY
+            new_channel = []
+            new_channel.append(channel.id)
+            for i in range(len(idDataBase)):
+                if idDataBase[i][0] == new_channel[0]:
+                    new_channel.append(idDataBase[i][1])
+            
+            
+            x = channel.category.text_channels
+            aux = []
+            aux_red = []
+            for i in range(len(x)):
+                if x[i].name.startswith("🔴"):
+                    aux_red.append(x[i].id)
+                else:
+                    aux.append(x[i].id) # SAVES THE IDS OF THE CHANNELS WITHOUT 🔴
+                
+            # STORES ALL CHANNELS IN A MATRIX OF THE SAME STYLE AS THE DB
+            current_channels = []
+            red_channels = []
+            for i in range(len(aux)):
+                blank = []
+                blank.append(aux[i])
+                current_channels.append(blank)
+                
+            for i in range(len(aux_red)):
+                blank = []
+                blank.append(aux_red[i])
+                red_channels.append(blank)
+                
+            for i in range(len(current_channels)):
+                for j in range(len(idDataBase)):
+                    if current_channels[i][0] == idDataBase[j][0]:
+                        current_channels[i].append(idDataBase[j][1])
+            
+            for i in range(len(red_channels)):
+                for j in range(len(idDataBase)):
+                    if red_channels[i][0] == idDataBase[j][0]:
+                        red_channels[i].append(idDataBase[j][1])
+            
+            current = channel.name
+            if channel.name.startswith("🔴"):
+                current_channels.append(new_channel)
+                current_channels.sort(key=lambda x: x[1])
+
+                # THE NEW CHANNEL INDEX
+                index_current = current_channels.index(new_channel)
+                index = index_current + len(red_channels)
+                try:
+                    await channel.edit(name="{}".format(current[1:]))
+                    await channel.move(beginning=True, offset=index)
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.REMOVE_RED_CIRCLE.format(mention)
             else:
-                aux.append(x[i].id) # SAVES THE IDS OF THE CHANNELS WITHOUT 🔴
+                red_channels.append(new_channel)
+                red_channels.sort(key=lambda x: x[1])
+
+                # THE NEW CHANNEL INDEX
+                index = red_channels.index(new_channel)
+                
+                try:
+                    await channel.edit(name="🔴 {}".format(current))
+                    await channel.move(beginning=True, offset=index)
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.ADD_RED_CIRCLE.format(mention)
+            await ctx.reply(notice, mention_author=False)
+        else:
+            current = channel.name
+            if channel.name.startswith("🔴"):
+                try:
+                    await channel.edit(name="{}".format(current[1:]))
+                    # await channel.move(end=True)
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.REMOVE_RED_CIRCLE.format(mention)
+            else:
+                try:
+                    await channel.edit(name="🔴 {}".format(current))
+                    # await channel.move(beginning=True)
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.ADD_RED_CIRCLE.format(mention)
+            await ctx.reply(notice, mention_author=False) 
             
-        # STORES ALL CHANNELS IN A MATRIX OF THE SAME STYLE AS THE DB
-        current_channels = []
-        red_channels = []
-        for i in range(len(aux)):
-            blank = []
-            blank.append(aux[i])
-            current_channels.append(blank)
-            
-        for i in range(len(aux_red)):
-            blank = []
-            blank.append(aux_red[i])
-            red_channels.append(blank)
-            
-        for i in range(len(current_channels)):
-            for j in range(len(idDataBase)):
-                if current_channels[i][0] == idDataBase[j][0]:
-                    current_channels[i].append(idDataBase[j][1])
-        
-        for i in range(len(red_channels)):
-            for j in range(len(idDataBase)):
-                if red_channels[i][0] == idDataBase[j][0]:
-                    red_channels[i].append(idDataBase[j][1])
-        
+    
+    async def red_circle_logic(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel | discord.Thread,
+        ):
+        mention = channel.mention
         current = channel.name
         if channel.name.startswith("🔴"):
-            current_channels.append(new_channel)
-            current_channels.sort(key=lambda x: x[1])
-
-            # THE NEW CHANNEL INDEX
-            index_current = current_channels.index(new_channel)
-            index = index_current + len(red_channels)
             try:
                 await channel.edit(name="{}".format(current[1:]))
-                await channel.move(beginning=True, offset=index)
+                # await channel.move(end=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
             else:
                 notice = self.REMOVE_RED_CIRCLE.format(mention)
         else:
-            red_channels.append(new_channel)
-            red_channels.sort(key=lambda x: x[1])
-
-            # THE NEW CHANNEL INDEX
-            index = red_channels.index(new_channel)
-            
             try:
                 await channel.edit(name="🔴 {}".format(current))
-                await channel.move(beginning=True, offset=index)
+                # await channel.move(beginning=True)
             except discord.Forbidden:  # Manage channel perms required.
                 perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                 notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
             else:
                 notice = self.ADD_RED_CIRCLE.format(mention)
         await ctx.reply(notice, mention_author=False) 
-    
+              
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
         """Do nothing, as no user data is stored."""
