@@ -1,0 +1,13 @@
+{
+  "author": [
+    "brunood"
+  ],
+  "min_bot_version": "",
+  "description": "Managing the channels during the national final season.",
+  "install_msg": "I hope I don't kill the server with this",
+  "short": "Storehouse Manager",
+  "name": "storehousemanager",
+  "disabled": false,
+  "requirements": [],
+  "tags": ["test"]
+}
