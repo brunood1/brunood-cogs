@@ -359,17 +359,7 @@ class Length(commands.Cog):
         storehouse_channels = {}
         
         x = national.text_channels
-
-        for i in range(len(x)):
-            if x[i].name.startswith("🔴"):
-                red_channels.update({x[i].id:ids[x[i].id]})
-            else:
-                current_channels.update({x[i].id:ids[x[i].id]})
-                
         y = strhouse.text_channels
-        
-        for i in range(len(y)):
-            current_channels.update({y[i].id:ids[y[i].id]})
                 
         new_id = channel.id
         new_name = ids[new_id]
@@ -383,7 +373,12 @@ class Length(commands.Cog):
             
 
         if status == "open":
-            # ADDS CHANNEL AND ORDERS IT
+            for i in range(len(x)):
+                if x[i].name.startswith("🔴"):
+                    red_channels.update({x[i].id:ids[x[i].id]})
+                else:
+                    current_channels.update({x[i].id:ids[x[i].id]})
+                
             current_channels.update({new_id:new_name})
             current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
 
@@ -407,6 +402,9 @@ class Length(commands.Cog):
             else:
                 notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
+            for i in range(len(y)):
+                storehouse_channels.update({y[i].id:ids[y[i].id]})
+            
             if channel.name.startswith("🔴"):
                 try:
                     await channel.edit(name="{}".format(channel.name[1:]))  
