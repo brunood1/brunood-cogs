@@ -355,8 +355,8 @@ class Length(commands.Cog):
         mention = channel.mention
         
         # DEFINING THE CATEGORIES BASED ON THEIR ID
-        strhouse = discord.utils.get(channel.guild.categories, id=356050097152327680) 
-        national = discord.utils.get(channel.guild.categories, id=1104339301283663902)
+        strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
+        national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
         current_channels = {}
         red_channels = {}
