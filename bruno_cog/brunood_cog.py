@@ -451,14 +451,6 @@ class Length(commands.Cog):
         ):
         """Adds or removes a red circle from a channel name"""
         
-        idDataBase = [
-            [1198635880370405477, "albania"],
-            [1198695703761932468, "brazil"],
-            [1198634448531496980, "finland"],
-            [1198634861641089146, "netherlands"],
-            [1198634389551206420, "slovakia"]
-        ]
-        
         ids = {
             1198635880370405477: "albania", 
             1198695703761932468: "brazil",
