@@ -342,6 +342,8 @@ class Length(commands.Cog):
         ):
         """Moves a channel to and from the storehouse"""
         
+  
+        
         ids = {
             1198635880370405477: "albania", 
             1198695703761932468: "brazil",
@@ -353,8 +355,8 @@ class Length(commands.Cog):
         mention = channel.mention
         
         # DEFINING THE CATEGORIES BASED ON THEIR ID
-        strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
-        national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
+        strhouse = discord.utils.get(channel.guild.categories, id=356050097152327680) 
+        national = discord.utils.get(channel.guild.categories, id=1104339301283663902)
         
         current_channels = {}
         red_channels = {}
@@ -365,13 +367,6 @@ class Length(commands.Cog):
                 
         new_id = channel.id
         new_name = ids[new_id]
-        
-        # if channel.name.startswith("🔴"):
-        #     red_channels.update({new_id:new_name})
-        #     red_channels = dict(sorted(red_channels.items(), key=lambda item: item[1]))
-        # else:
-        #     current_channels.update({new_id:new_name})
-        #     current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
             
 
         if status == "open":
@@ -449,7 +444,9 @@ class Length(commands.Cog):
         ctx: commands.Context,
         channel: discord.TextChannel | discord.Thread,
         ):
-        """Adds or removes a red circle from a channel name"""
+        """(Adds/Removes) :red_circle: (to/from) a channel name"""
+        
+  
         
         ids = {
             1198635880370405477: "albania", 
@@ -458,7 +455,6 @@ class Length(commands.Cog):
             1198634861641089146: "netherlands",
             1198634389551206420: "slovakia",  
         }
-        
         
         mention = channel.mention
         if channel.id in ids.keys():

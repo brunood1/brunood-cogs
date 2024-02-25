@@ -176,7 +176,7 @@ class Storehouse(commands.Cog):
         ctx: commands.Context,
         channel: discord.TextChannel | discord.Thread,
         ):
-        """Adds or removes a red circle from a channel name"""
+        """(Adds/Removes) :red_circle: (to/from) a channel name"""
         
         ids = {
             929409087731531827: "albania",
