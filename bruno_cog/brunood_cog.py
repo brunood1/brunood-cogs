@@ -20,6 +20,8 @@ class Length(commands.Cog):
     REMOVE_RED_CIRCLE = ":white_check_mark: Removed :red_circle: from {}"
     MOVED_FROM_STOREHOUSE = "Moved {} from the storehouse"
     MOVED_TO_STOREHOUSE = "Moved {} to the storehouse"
+    CHANNEL_OPENED = "Channel {} is already opened"
+    CHANNEL_CLOSED = "Channel {} is already closed"
     
     idDataBase = [
         [1198634448531496980, "finland"],
@@ -373,64 +375,70 @@ class Length(commands.Cog):
             
 
         if status == "open":
-            for i in range(len(x)):
-                if x[i].name.startswith("🔴"):
-                    red_channels.update({x[i].id:ids[x[i].id]})
-                else:
-                    current_channels.update({x[i].id:ids[x[i].id]})
-                
-            current_channels.update({new_id:new_name})
-            current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
-
-            # THE NEW CHANNEL INDEX
-            red_count = len(red_channels)
-        
-            count = 0
-            for k in current_channels.keys():
-                if k == new_id:
-                    break
-                if k != new_id:
-                    count += 1
+            if new_id in current_channels.keys():
+                notice = self.CHANNEL_OPENED.format(mention)
+            else:   
+                for i in range(len(x)):
+                    if x[i].name.startswith("🔴"):
+                        red_channels.update({x[i].id:ids[x[i].id]})
+                    else:
+                        current_channels.update({x[i].id:ids[x[i].id]})
                     
-            index = count + red_count
+                current_channels.update({new_id:new_name})
+                current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
+
+                # THE NEW CHANNEL INDEX
+                red_count = len(red_channels)
             
-            try:
-                await channel.move(beginning=True, offset=index, category=national, sync_permissions=True)
-            except discord.Forbidden:  # Manage channel perms required.
-                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
-                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
-            else:
-                notice = self.MOVED_FROM_STOREHOUSE.format(mention)
-        elif status == "close":
-            for i in range(len(y)):
-                storehouse_channels.update({y[i].id:ids[y[i].id]})
-            
-            if channel.name.startswith("🔴"):
+                count = 0
+                for k in current_channels.keys():
+                    if k == new_id:
+                        break
+                    if k != new_id:
+                        count += 1
+                        
+                index = count + red_count
+                
                 try:
-                    await channel.edit(name="{}".format(channel.name[1:]))  
+                    await channel.move(beginning=True, offset=index, category=national, sync_permissions=True)
                 except discord.Forbidden:  # Manage channel perms required.
                     perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                     notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
                 else:
-                    notice = self.REMOVE_RED_CIRCLE.format(mention)
-                    
-            storehouse_channels.update({new_id:new_name})
-            storehouse_channels = dict(sorted(storehouse_channels.items(), key=lambda item: item[1]))
-
-            index_storehouse = 0
-            for k in storehouse_channels.keys():
-                if k == new_id:
-                    break
-                if k != new_id:
-                    index_storehouse += 1
-                    
-            try:
-                await channel.move(beginning=True, offset=index_storehouse, category=strhouse, sync_permissions=True)
-            except discord.Forbidden:  # Manage channel perms required.
-                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
-                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                    notice = self.MOVED_FROM_STOREHOUSE.format(mention)
+        elif status == "close":
+            if new_id in current_channels.keys():
+                notice = self.CHANNEL_CLOSED.format(mention)
             else:
-                notice = self.MOVED_TO_STOREHOUSE.format(mention)
+                for i in range(len(y)):
+                    storehouse_channels.update({y[i].id:ids[y[i].id]})
+                
+                if channel.name.startswith("🔴"):
+                    try:
+                        await channel.edit(name="{}".format(channel.name[1:]))  
+                    except discord.Forbidden:  # Manage channel perms required.
+                        perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                        notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                    else:
+                        notice = self.REMOVE_RED_CIRCLE.format(mention)
+                        
+                storehouse_channels.update({new_id:new_name})
+                storehouse_channels = dict(sorted(storehouse_channels.items(), key=lambda item: item[1]))
+
+                index_storehouse = 0
+                for k in storehouse_channels.keys():
+                    if k == new_id:
+                        break
+                    if k != new_id:
+                        index_storehouse += 1
+                        
+                try:
+                    await channel.move(beginning=True, offset=index_storehouse, category=strhouse, sync_permissions=True)
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.MOVED_TO_STOREHOUSE.format(mention)
         else:
             notice = ":x: Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
         await ctx.reply(notice, mention_author=False)
