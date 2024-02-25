@@ -418,7 +418,7 @@ class Length(commands.Cog):
             current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
 
             index_storehouse = 0
-            for k in current_channels.keys():
+            for k in storehouse_channels.keys():
                 if k == new_id:
                     break
                 if k != new_id:
