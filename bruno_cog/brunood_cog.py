@@ -414,8 +414,8 @@ class Length(commands.Cog):
                 else:
                     notice = self.REMOVE_RED_CIRCLE.format(mention)
                     
-            current_channels.update({new_id:new_name})
-            current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
+            storehouse_channels.update({new_id:new_name})
+            storehouse_channels = dict(sorted(storehouse_channels.items(), key=lambda item: item[1]))
 
             index_storehouse = 0
             for k in storehouse_channels.keys():
