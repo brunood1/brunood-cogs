@@ -482,7 +482,7 @@ class Length(commands.Cog):
                     if k != channel.id:
                         count += 1
                         
-                index = count + red_count
+                index = count + red_count - 1
                 try:
                     await channel.edit(name="{}".format(current[1:]))
                     await channel.move(beginning=True, offset=index)
