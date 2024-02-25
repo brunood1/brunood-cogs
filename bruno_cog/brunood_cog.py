@@ -407,7 +407,7 @@ class Length(commands.Cog):
                 else:
                     notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
-            if new_id in current_channels.keys():
+            if new_id in storehouse_channels.keys():
                 notice = self.CHANNEL_CLOSED.format(mention)
             else:
                 for i in range(len(y)):
