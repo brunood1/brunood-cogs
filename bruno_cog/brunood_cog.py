@@ -330,6 +330,112 @@ class Length(commands.Cog):
             else:
                 notice = self.ADD_RED_CIRCLE.format(mention)
         await ctx.reply(notice, mention_author=False) 
+        
+    @commands.command()
+    async def storehouse_d(
+        self,
+        ctx: commands.Context,
+        status: str,
+        channel: discord.TextChannel
+        ):
+        """Moves a channel to and from the storehouse"""
+        
+        ids = {
+            1198635880370405477: "albania", 
+            1198695703761932468: "brazil",
+            1198634448531496980: "finland",
+            1198634861641089146: "netherlands",
+            1198634389551206420: "slovakia",  
+        }
+        
+        mention = channel.mention
+        
+        # DEFINING THE CATEGORIES BASED ON THEIR ID
+        strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
+        national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
+        
+        current_channels = {}
+        red_channels = {}
+        storehouse_channels = {}
+        
+        x = national.text_channels
+
+        for i in range(len(x)):
+            if x[i].name.startswith("🔴"):
+                red_channels.update({x[i].id:ids[x[i].id]})
+            else:
+                current_channels.update({x[i].id:ids[x[i].id]})
+                
+        y = strhouse.text_channels
+        
+        for i in range(len(y)):
+            current_channels.update({y[i].id:ids[y[i].id]})
+                
+        new_id = channel.id
+        new_name = ids[new_id]
+        
+        # if channel.name.startswith("🔴"):
+        #     red_channels.update({new_id:new_name})
+        #     red_channels = dict(sorted(red_channels.items(), key=lambda item: item[1]))
+        # else:
+        #     current_channels.update({new_id:new_name})
+        #     current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
+            
+
+        if status == "open":
+            # ADDS CHANNEL AND ORDERS IT
+            current_channels.update({new_id:new_name})
+            current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
+
+            # THE NEW CHANNEL INDEX
+            red_count = len(red_channels)
+        
+            count = 0
+            for k in current_channels.keys():
+                if k == new_id:
+                    break
+                if k != new_id:
+                    count += 1
+                    
+            index = count + red_count
+            
+            try:
+                await channel.move(beginning=True, offset=index, category=national, sync_permissions=True)
+            except discord.Forbidden:  # Manage channel perms required.
+                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+            else:
+                notice = self.MOVED_FROM_STOREHOUSE.format(mention)
+        elif status == "close":
+            if channel.name.startswith("🔴"):
+                try:
+                    await channel.edit(name="{}".format(channel.name[1:]))  
+                except discord.Forbidden:  # Manage channel perms required.
+                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                else:
+                    notice = self.REMOVE_RED_CIRCLE.format(mention)
+                    
+            current_channels.update({new_id:new_name})
+            current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
+
+            index_storehouse = 0
+            for k in current_channels.keys():
+                if k == new_id:
+                    break
+                if k != new_id:
+                    index_storehouse += 1
+                    
+            try:
+                await channel.move(beginning=True, offset=index_storehouse, category=strhouse, sync_permissions=True)
+            except discord.Forbidden:  # Manage channel perms required.
+                perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+            else:
+                notice = self.MOVED_TO_STOREHOUSE.format(mention)
+        else:
+            notice = ":x: Invalid Syntax ::: First argument needs to be ``open`` or ``close``"
+        await ctx.reply(notice, mention_author=False)
               
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
