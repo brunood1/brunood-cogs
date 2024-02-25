@@ -475,9 +475,9 @@ class Length(commands.Cog):
             red_channels = {}
             for i in range(len(x)):
                 if x[i].name.startswith("🔴"):
-                    red_channels.update({x.id:ids[x.id]})
+                    red_channels.update({x[i].id:ids[x[i].id]})
                 else:
-                    current_channels.update({x.id:ids[x.id]})
+                    current_channels.update({x[i].id:ids[x[i].id]})
             
             current = channel.name
             if channel.name.startswith("🔴"):
