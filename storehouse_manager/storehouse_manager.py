@@ -4,6 +4,19 @@ import typing
 from redbot.core import commands
 from redbot.core.bot import Red
 
+import json
+import os.path
+
+# Configure files.
+current_folder = os.path.dirname(os.path.realpath(__file__))  # Get the directory in which this codefile is located.
+data_folder = os.path.join(current_folder, "data")  # Get its subdirectory named "data".
+
+# ...
+
+json_filepath = os.path.join(data_folder, "dict.json")  # Get the "dict.json" in the subdirectory.
+with open(json_filepath, "r") as f:  # Load the data (read-only) from the aforementioned file.
+    ids = json.load(f)
+
 
 class Storehouse(commands.Cog):
     """Commands for managing the national final channels in the Eurovision Discord"""
@@ -20,6 +33,8 @@ class Storehouse(commands.Cog):
     REMOVE_RED_CIRCLE = ":white_check_mark: Removed :red_circle: from {}"
     MOVED_FROM_STOREHOUSE = "Moved {} from the storehouse"
     MOVED_TO_STOREHOUSE = "Moved {} to the storehouse"
+    CHANNEL_OPENED = "Channel {} is already opened"
+    CHANNEL_CLOSED = "Channel {} is already closed"
 
     def __init__(self, bot: Red):
         super().__init__()
@@ -32,55 +47,10 @@ class Storehouse(commands.Cog):
     async def storehouse(
         self,
         ctx: commands.Context,
-        status: str,
+        status: typing.Literal["open", "close"],
         channel: discord.TextChannel
         ):
         """Moves a channel to and from the storehouse"""
-        
-        ids = {
-            929409087731531827: "albania",
-            929409225648652288: "armenia",
-            929409403088699412: "australia",
-            929409326165155840: "austria",
-            929409478586171503: "azerbaijan",
-            929409553936838758: "belgium",
-            929409624677961769: "bulgaria",
-            929410876451205141: "croatia",
-            929409791292477470: "cyprus",
-            929409853695356978: "czechia",
-            406133769263644693: "denmark",
-            929410032460771338: "estonia",
-            929410138916392970: "finland",
-            929410257946546246: "france",
-            929410588398981190: "georgia",
-            929409941406642256: "germany",
-            929410760541610095: "greece",
-            406132729588088843: "island",
-            929410981505945700: "ireland",
-            515896947962413073: "israel",
-            401060366399832084: "italy",
-            407574926996930563: "latvia",
-            401058593090306048: "lithuania",
-            999999930829647964: "luxembourg",
-            498206361533022219: "malta",
-            407591565960413184: "moldova",
-            929411157037576192: "montenegro",
-            929411396872077412: "netherlands",
-            929411282589872188: "north macedonia",
-            401057924107206667: "norway",
-            284093620750123010: "poland",
-            410457203556876299: "portugal",
-            401059251486720051: "romania",
-            929411787953143819: "san marino",
-            404816797708058624: "serbia",
-            410455540603551746: "slovenia",
-            491018710098903047: "spain",
-            393480622590394369: "sweden",
-            809387654852378674: "sweden2",
-            929409724015853578: "switzerland",
-            407578430910234635: "ukraine",
-            929410455443767296: "united kingdom"
-        }
         
         mention = channel.mention
         
@@ -88,43 +58,49 @@ class Storehouse(commands.Cog):
         strhouse = discord.utils.get(channel.guild.categories, id=356050097152327680) 
         national = discord.utils.get(channel.guild.categories, id=1104339301283663902)
         
+        # dictionaries that will store the channels currently in use (separated by if the have a red circle)
+        # and the channels not in use (in the storehouse)
+        # required to make sure the channels get sorted alphabetically when they're opened or closed
         current_channels = {}
         red_channels = {}
         storehouse_channels = {}
         
-        x = national.text_channels
-        y = strhouse.text_channels
+        x = national.text_channels # aux variable, all channels currently in use
+        y = strhouse.text_channels # aux variable, all channels not in use (storehouse)
                 
-        new_id = channel.id
-        new_name = ids[new_id]
+        new_id = channel.id # takes the id of the channel that the command is being used upon
+        new_name = ids[new_id] # uses the id to check the name of the country
             
-
-        if status == "open":
-            if new_id in current_channels.keys():
+        if status == "open": # adds it channel to its repsective dict
+            if new_id in current_channels.keys(): # if the channel is already opened
                 notice = self.CHANNEL_OPENED.format(mention)
             else:   
-                for i in range(len(x)):
-                    if x[i].name.startswith("🔴"):
-                        red_channels.update({x[i].id:ids[x[i].id]})
-                    else:
-                        current_channels.update({x[i].id:ids[x[i].id]})
+                # taking all opened channels and putting them into their respective dictionaries
+                # (based on if they have a red circle or not)
+                for i in range(len(x)): # for all channels currently in use
+                    channel_id = x[i].id
+                    channel_name = ids[channel_id] 
                     
+                    if x[i].name.startswith("🔴"):
+                        red_channels.update({channel_id:channel_name})
+                    else:
+                        current_channels.update({channel_id:channel_name})
+                    
+                # then we add the new channel to the dictionary and sort it
+                # the way i see it the sorting doesnt add to the complexity of the algorithm because
+                # the dictionary is already sorted besides the new channel so there arent many changes that need to be
+                # done so it gets sorted
                 current_channels.update({new_id:new_name})
                 current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
 
-                # THE NEW CHANNEL INDEX
+                # takes the index for the new channel, so that discord knows where to place the new channel
+                # acknolowdging that the red channels stay on top
                 red_count = len(red_channels)
-            
-                count = 0
-                for k in current_channels.keys():
-                    if k == new_id:
-                        break
-                    if k != new_id:
-                        count += 1
-                        
+                count = current_channels.keys().index(new_id)
                 index = count + red_count
                 
                 try:
+                    # adds channel to the national category in the beginning and moves it to the index
                     await channel.move(beginning=True, offset=index, category=national, sync_permissions=True)
                 except discord.Forbidden:  # Manage channel perms required.
                     perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
@@ -132,32 +108,36 @@ class Storehouse(commands.Cog):
                 else:
                     notice = self.MOVED_FROM_STOREHOUSE.format(mention)
         elif status == "close":
-            if new_id in storehouse_channels.keys():
+            if new_id in storehouse_channels.keys(): # if the channel we want to close is already closed
                 notice = self.CHANNEL_CLOSED.format(mention)
             else:
                 for i in range(len(y)):
-                    storehouse_channels.update({y[i].id:ids[y[i].id]})
+                    channel_id = y[i].id
+                    channel_name = ids[channel_id]
+                    
+                    # adds channels in the storehouse to a dict
+                    storehouse_channels.update({channel_id:channel_name})
                 
+                # check if the channel has a red circle so we can remove it before storing
                 if channel.name.startswith("🔴"):
                     try:
-                        await channel.edit(name="{}".format(channel.name[1:]))  
+                        # removes red circle
+                        await channel.edit(name=channel.name[1:])    
                     except discord.Forbidden:  # Manage channel perms required.
                         perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                         notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
                     else:
                         notice = self.REMOVE_RED_CIRCLE.format(mention)
                         
+                # adds channel we want to close to the storehouse dict and sorts it
                 storehouse_channels.update({new_id:new_name})
-                storehouse_channels = dict(sorted(storehouse_channels.items(), key=lambda item: item[1]))
-
-                index_storehouse = 0
-                for k in storehouse_channels.keys():
-                    if k == new_id:
-                        break
-                    if k != new_id:
-                        index_storehouse += 1
+                storehouse_channels = dict(sorted(storehouse_channels.items(), key=lambda item: item[1])) # why sort
+                        
+                # takes its index
+                index_storehouse = storehouse_channels.keys().index(new_id)
                         
                 try:
+                    # moves category
                     await channel.move(beginning=True, offset=index_storehouse, category=strhouse, sync_permissions=True)
                 except discord.Forbidden:  # Manage channel perms required.
                     perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
@@ -178,99 +158,60 @@ class Storehouse(commands.Cog):
         ):
         """(Adds/Removes) :red_circle: (to/from) a channel name"""
         
-        ids = {
-            929409087731531827: "albania",
-            929409225648652288: "armenia",
-            929409403088699412: "australia",
-            929409326165155840: "austria",
-            929409478586171503: "azerbaijan",
-            929409553936838758: "belgium",
-            929409624677961769: "bulgaria",
-            929410876451205141: "croatia",
-            929409791292477470: "cyprus",
-            929409853695356978: "czechia",
-            406133769263644693: "denmark",
-            929410032460771338: "estonia",
-            929410138916392970: "finland",
-            929410257946546246: "france",
-            929410588398981190: "georgia",
-            929409941406642256: "germany",
-            929410760541610095: "greece",
-            406132729588088843: "island",
-            929410981505945700: "ireland",
-            515896947962413073: "israel",
-            401060366399832084: "italy",
-            407574926996930563: "latvia",
-            401058593090306048: "lithuania",
-            999999930829647964: "luxembourg",
-            498206361533022219: "malta",
-            407591565960413184: "moldova",
-            929411157037576192: "montenegro",
-            929411396872077412: "netherlands",
-            929411282589872188: "north macedonia",
-            401057924107206667: "norway",
-            284093620750123010: "poland",
-            410457203556876299: "portugal",
-            401059251486720051: "romania",
-            929411787953143819: "san marino",
-            404816797708058624: "serbia",
-            410455540603551746: "slovenia",
-            491018710098903047: "spain",
-            393480622590394369: "sweden",
-            809387654852378674: "sweden2",
-            929409724015853578: "switzerland",
-            407578430910234635: "ukraine",
-            929410455443767296: "united kingdom"
-        }
-        
         mention = channel.mention
+        
+        # the ordering will only work with the country channels, so if for example some runs this command on #esc250 the channel
+        # will not be ordered, it will only get the red circle and stay in the same place
+        # unlike with the country channels where it will get moved to the top of the category and be ordered alphabetically
         if channel.id in ids.keys():
-            x = channel.category.text_channels
+            
+            x = channel.category.text_channels # aux variable, all channels in the same category as the channel we're adding the circle to
+            
             current_channels = {}
             red_channels = {}
-            for i in range(len(x)):
+            
+            for i in range(len(x)):  
+                channel_id = x[i].id
+                channel_name = ids[channel_id]
+                
+                
+                # separates between channels with and without the circle
                 if x[i].name.startswith("🔴"):
-                    red_channels.update({x[i].id:ids[x[i].id]})
+                    red_channels.update({channel_id:channel_name})
                 else:
-                    current_channels.update({x[i].id:ids[x[i].id]})
+                    current_channels.update({channel_id:channel_name})
             
             current = channel.name
-            if channel.name.startswith("🔴"):
+            if channel.name.startswith("🔴"): # if the channel already has the red circle the command will remove it
+                # adds the channel we ran the command on in the dict (no circle) and sorts it
                 current_channels.update({channel.id:ids[channel.id]})
                 current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
 
-                # THE NEW CHANNEL INDEX
+                # gets the index
                 red_count = len(red_channels)
-            
-                count = 0
-                for k in current_channels.keys():
-                    if k == channel.id:
-                        break
-                    if k != channel.id:
-                        count += 1
-                        
+                count = current_channels.keys().index(channel.id)
                 index = count + red_count - 1
+                
                 try:
+                    # removes the red circle from the name
                     await channel.edit(name="{}".format(current[1:]))
+                    # moves it down
                     await channel.move(beginning=True, offset=index)
                 except discord.Forbidden:  # Manage channel perms required.
                     perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                     notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
                 else:
                     notice = self.REMOVE_RED_CIRCLE.format(mention)
-            else:
+            else: # if the channel doesnt have a red circle, then we add one
+                # adds channel to the red channel dictionary and sorts it
                 red_channels.update({channel.id:ids[channel.id]})
                 red_channels = dict(sorted(red_channels.items(), key=lambda item: item[1]))
-
-                # THE NEW CHANNEL INDEX
-                index = 0
-                for k in red_channels.keys():
-                    if k == channel.id:
-                        break
-                    if k != channel.id:
-                        index += 1
+                        
+                # gets its index
+                index = red_channels.keys().index(channel.id)
                 
                 try:
+                    # adds circle and moves it up
                     await channel.edit(name="🔴 {}".format(current))
                     await channel.move(beginning=True, offset=index)
                 except discord.Forbidden:  # Manage channel perms required.
@@ -279,7 +220,7 @@ class Storehouse(commands.Cog):
                 else:
                     notice = self.ADD_RED_CIRCLE.format(mention)
             await ctx.reply(notice, mention_author=False)
-        else:
+        else: # when the channel isnt a country channel we just add or remove the circle
             current = channel.name
             if channel.name.startswith("🔴"):
                 try:
