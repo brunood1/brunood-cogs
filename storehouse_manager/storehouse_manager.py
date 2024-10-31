@@ -210,7 +210,7 @@ class Storehouse(commands.Cog):
                     notice = self.REMOVE_RED_CIRCLE.format(mention)
             else: # if the channel doesnt have a red circle, then we add one
                 if channel.category.id == 1198407644021522452:
-                    await ctx.reply(self.CANT_GO_LIVE)
+                    notice = self.CANT_GO_LIVE
                 else:
                     # adds channel to the red channel dictionary and sorts it
                     red_channels.update({channel.id:ids[str(channel.id)]})
