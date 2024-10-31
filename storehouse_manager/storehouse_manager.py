@@ -208,7 +208,7 @@ class Storehouse(commands.Cog):
                 else:
                     notice = self.REMOVE_RED_CIRCLE.format(mention)
             else: # if the channel doesnt have a red circle, then we add one
-                if str(channel.id) in str:
+                if str(channel.id) in storehouse_channels.keys():
                     await ctx.reply(self.CANT_GO_LIVE)
                 else:
                     # adds channel to the red channel dictionary and sorts it
