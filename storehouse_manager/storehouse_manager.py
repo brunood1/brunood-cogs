@@ -100,7 +100,7 @@ class Storehouse(commands.Cog):
                 # takes the index for the new channel, so that discord knows where to place the new channel
                 # acknolowdging that the red channels stay on top
                 red_count = len(red_channels)
-                count = len(current_channels)
+                count = list(current_channels.keys()).index(new_id)
                 index = count + red_count
                 
                 try:
@@ -138,7 +138,7 @@ class Storehouse(commands.Cog):
                 storehouse_channels = dict(sorted(storehouse_channels.items(), key=lambda item: item[1])) # why sort
                         
                 # takes its index
-                index_storehouse = len(storehouse_channels)
+                index_storehouse = list(storehouse_channels.keys()).index(new_id)
                         
                 try:
                     # moves category
