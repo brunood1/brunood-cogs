@@ -73,9 +73,10 @@ class Storehouse(commands.Cog):
         
         x = national.text_channels # aux variable, all channels currently in use
         y = strhouse.text_channels # aux variable, all channels not in use (storehouse)
-                
-        new_id = channel.id # takes the id of the channel that the command is being used upon
-        new_name = ids[str(new_id)] # uses the id to check the name of the country
+        
+        if str(channel.id) in ids.keys():   
+            new_id = channel.id # takes the id of the channel that the command is being used upon
+            new_name = ids[str(new_id)] # uses the id to check the name of the country
             
         if status == "open": # adds it channel to its repsective dict
             if str(new_id) in current_channels.keys(): # if the channel is already opened
