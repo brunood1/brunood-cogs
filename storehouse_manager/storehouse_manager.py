@@ -13,7 +13,7 @@ data_folder = os.path.join(current_folder, "data")  # Get its subdirectory named
 
 # ...
 
-json_filepath = os.path.join(data_folder, "dict.json")  # Get the "dict.json" in the subdirectory.
+json_filepath = os.path.join(data_folder, "test.json")  # Get the "dict.json" in the subdirectory.
 with open(json_filepath, "r") as f:  # Load the data (read-only) from the aforementioned file.
     ids = json.load(f)
 
@@ -54,9 +54,13 @@ class Storehouse(commands.Cog):
         
         mention = channel.mention
         
-        # DEFINING THE CATEGORIES BASED ON THEIR ID
+        # DEFINING THE CATEGORIES BASED ON THEIR ID (esc id)
         strhouse = discord.utils.get(channel.guild.categories, id=356050097152327680) 
         national = discord.utils.get(channel.guild.categories, id=1104339301283663902)
+        
+        # (test server id)
+        # strhouse = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
+        # national = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
         # dictionaries that will store the channels currently in use (separated by if the have a red circle)
         # and the channels not in use (in the storehouse)

@@ -48,7 +48,7 @@ class Length(commands.Cog):
         length = len(user.name)
             
         # Create embed.
-        embed = discord.Embed(colour=0xffffff)
+        embed = discord.Embed(colour=0xfffff0)
         embed.title = "User {}".format(user.name)
         embed.add_field(name="Length", value="Your username has {} characters".format(length), inline=False)
         embed.set_thumbnail(url=user.display_avatar)
