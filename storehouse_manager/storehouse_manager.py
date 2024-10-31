@@ -173,6 +173,7 @@ class Storehouse(commands.Cog):
             x = channel.category.text_channels # aux variable, all channels in the same category as the channel we're adding the circle to
             
             current_channels = {}
+            storehouse_channels = {}
             red_channels = {}
             
             for i in range(len(x)):  
@@ -208,7 +209,7 @@ class Storehouse(commands.Cog):
                 else:
                     notice = self.REMOVE_RED_CIRCLE.format(mention)
             else: # if the channel doesnt have a red circle, then we add one
-                if str(channel.id) in storehouse_channels.keys():
+                if channel.category.id == 1198407644021522452:
                     await ctx.reply(self.CANT_GO_LIVE)
                 else:
                     # adds channel to the red channel dictionary and sorts it
