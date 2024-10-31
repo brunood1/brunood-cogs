@@ -76,14 +76,14 @@ class Storehouse(commands.Cog):
         new_name = ids[str(new_id)] # uses the id to check the name of the country
             
         if status == "open": # adds it channel to its repsective dict
-            if new_id in current_channels.keys(): # if the channel is already opened
+            if str(new_id) in current_channels.keys(): # if the channel is already opened
                 notice = self.CHANNEL_OPENED.format(mention)
             else:   
                 # taking all opened channels and putting them into their respective dictionaries
                 # (based on if they have a red circle or not)
                 for i in range(len(x)): # for all channels currently in use
                     channel_id = x[i].id
-                    channel_name = ids[channel_id] 
+                    channel_name = ids[str(channel_id)] 
                     
                     if x[i].name.startswith("🔴"):
                         red_channels.update({channel_id:channel_name})
@@ -100,7 +100,7 @@ class Storehouse(commands.Cog):
                 # takes the index for the new channel, so that discord knows where to place the new channel
                 # acknolowdging that the red channels stay on top
                 red_count = len(red_channels)
-                count = current_channels.keys().index(new_id)
+                count = len(current_channels)
                 index = count + red_count
                 
                 try:
@@ -117,7 +117,7 @@ class Storehouse(commands.Cog):
             else:
                 for i in range(len(y)):
                     channel_id = y[i].id
-                    channel_name = ids[channel_id]
+                    channel_name = ids[str(channel_id)]
                     
                     # adds channels in the storehouse to a dict
                     storehouse_channels.update({channel_id:channel_name})
@@ -138,7 +138,7 @@ class Storehouse(commands.Cog):
                 storehouse_channels = dict(sorted(storehouse_channels.items(), key=lambda item: item[1])) # why sort
                         
                 # takes its index
-                index_storehouse = storehouse_channels.keys().index(new_id)
+                index_storehouse = len(storehouse_channels)
                         
                 try:
                     # moves category
