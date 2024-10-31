@@ -36,6 +36,7 @@ class Storehouse(commands.Cog):
     CHANNEL_OPENED = "Channel {} is already opened"
     CHANNEL_CLOSED = "Channel {} is already closed"
     CANT_GO_LIVE = X + "Archived channels cannot go live"
+    ONLY_COUNTRIES = "Can only open/close country channels"
 
     def __init__(self, bot: Red):
         super().__init__()
@@ -79,6 +80,8 @@ class Storehouse(commands.Cog):
         if status == "open": # adds it channel to its repsective dict
             if str(new_id) in current_channels.keys(): # if the channel is already opened
                 notice = self.CHANNEL_OPENED.format(mention)
+            if str(channel.id) not in ids.keys():
+                notice = self.ONLY_COUNTRIES
             else:   
                 # taking all opened channels and putting them into their respective dictionaries
                 # (based on if they have a red circle or not)
