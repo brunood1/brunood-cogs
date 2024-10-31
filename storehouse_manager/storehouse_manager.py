@@ -35,6 +35,7 @@ class Storehouse(commands.Cog):
     MOVED_TO_STOREHOUSE = "Moved {} to the storehouse"
     CHANNEL_OPENED = "Channel {} is already opened"
     CHANNEL_CLOSED = "Channel {} is already closed"
+    CANT_GO_LIVE = X + "Archived channels cannot go live"
 
     def __init__(self, bot: Red):
         super().__init__()
@@ -207,22 +208,25 @@ class Storehouse(commands.Cog):
                 else:
                     notice = self.REMOVE_RED_CIRCLE.format(mention)
             else: # if the channel doesnt have a red circle, then we add one
-                # adds channel to the red channel dictionary and sorts it
-                red_channels.update({channel.id:ids[str(channel.id)]})
-                red_channels = dict(sorted(red_channels.items(), key=lambda item: item[1]))
-                        
-                # gets its index
-                index = list(red_channels.keys()).index(channel.id)
-                
-                try:
-                    # adds circle and moves it up
-                    await channel.edit(name="🔴 {}".format(current))
-                    await channel.move(beginning=True, offset=index)
-                except discord.Forbidden:  # Manage channel perms required.
-                    perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
-                    notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                if str(channel.id) in str:
+                    await ctx.reply(self.CANT_GO_LIVE)
                 else:
-                    notice = self.ADD_RED_CIRCLE.format(mention)
+                    # adds channel to the red channel dictionary and sorts it
+                    red_channels.update({channel.id:ids[str(channel.id)]})
+                    red_channels = dict(sorted(red_channels.items(), key=lambda item: item[1]))
+                            
+                    # gets its index
+                    index = list(red_channels.keys()).index(channel.id)
+                    
+                    try:
+                        # adds circle and moves it up
+                        await channel.edit(name="🔴 {}".format(current))
+                        await channel.move(beginning=True, offset=index)
+                    except discord.Forbidden:  # Manage channel perms required.
+                        perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                        notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                    else:
+                        notice = self.ADD_RED_CIRCLE.format(mention)
             await ctx.reply(notice, mention_author=False)
         else: # when the channel isnt a country channel we just add or remove the circle
             current = channel.name
