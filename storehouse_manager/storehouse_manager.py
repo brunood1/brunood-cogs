@@ -167,7 +167,7 @@ class Storehouse(commands.Cog):
         # the ordering will only work with the country channels, so if for example some runs this command on #esc250 the channel
         # will not be ordered, it will only get the red circle and stay in the same place
         # unlike with the country channels where it will get moved to the top of the category and be ordered alphabetically
-        if channel.id in ids.keys():
+        if str(channel.id) in ids.keys():
             
             x = channel.category.text_channels # aux variable, all channels in the same category as the channel we're adding the circle to
             
@@ -176,7 +176,7 @@ class Storehouse(commands.Cog):
             
             for i in range(len(x)):  
                 channel_id = x[i].id
-                channel_name = ids[channel_id]
+                channel_name = ids[str(channel_id)]
                 
                 
                 # separates between channels with and without the circle
@@ -188,12 +188,12 @@ class Storehouse(commands.Cog):
             current = channel.name
             if channel.name.startswith("🔴"): # if the channel already has the red circle the command will remove it
                 # adds the channel we ran the command on in the dict (no circle) and sorts it
-                current_channels.update({channel.id:ids[channel.id]})
+                current_channels.update({channel.id:ids[str(channel.id)]})
                 current_channels = dict(sorted(current_channels.items(), key=lambda item: item[1]))
 
                 # gets the index
                 red_count = len(red_channels)
-                count = current_channels.keys().index(channel.id)
+                count = list(current_channels.keys()).index(channel.id)
                 index = count + red_count - 1
                 
                 try:
@@ -208,11 +208,11 @@ class Storehouse(commands.Cog):
                     notice = self.REMOVE_RED_CIRCLE.format(mention)
             else: # if the channel doesnt have a red circle, then we add one
                 # adds channel to the red channel dictionary and sorts it
-                red_channels.update({channel.id:ids[channel.id]})
+                red_channels.update({channel.id:ids[str(channel.id)]})
                 red_channels = dict(sorted(red_channels.items(), key=lambda item: item[1]))
                         
                 # gets its index
-                index = red_channels.keys().index(channel.id)
+                index = list(red_channels.keys()).index(channel.id)
                 
                 try:
                     # adds circle and moves it up
