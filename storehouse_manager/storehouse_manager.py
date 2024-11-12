@@ -255,7 +255,9 @@ class Storehouse(commands.Cog):
                     notice = self.ADD_RED_CIRCLE.format(mention)
             await ctx.reply(notice, mention_author=False) 
             
-    
+    @commands.command()  
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_channels=True)
     async def is_country_channel(
         self,
         ctx: commands.Context,
