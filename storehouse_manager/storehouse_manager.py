@@ -190,6 +190,7 @@ class Storehouse(commands.Cog):
                 else:
                     current_channels.update({channel_id:channel_name})
             
+            notice: str
             current = channel.name
             if channel.name.startswith("🔴"): # if the channel already has the red circle the command will remove it
                 # adds the channel we ran the command on in the dict (no circle) and sorts it
@@ -254,6 +255,19 @@ class Storehouse(commands.Cog):
                     notice = self.ADD_RED_CIRCLE.format(mention)
             await ctx.reply(notice, mention_author=False) 
             
+    
+    async def is_country_channel(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel | discord.Thread):
+                    
+        flag = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
+        
+        if flag != "":
+            await ctx.reply("{} is a country channel".format(channel.mention), mention_author=False)
+        else:
+            await ctx.reply("{} is not a country channel".format(channel.mention), mention_author=False)
+        
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
         """Do nothing, as no user data is stored."""
