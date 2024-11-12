@@ -299,6 +299,8 @@ class Storehouse(commands.Cog):
         STOREHOUSE = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
         OPENED_CHANNELS = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
+        INDICATOR_CONVERT = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
+        
         flagEmoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
         
         mention = channel.mention
@@ -317,7 +319,6 @@ class Storehouse(commands.Cog):
             if COUNTRY == True and channel in OPENED_CHANNELS.channels:
                 
                 # Get country name
-                INDICATOR_CONVERT = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
                 country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in flagEmoji.lower())
                 country_name = countries[country_code]
                 
@@ -325,11 +326,15 @@ class Storehouse(commands.Cog):
                     RED_CHANNELS = []    
                     NON_RED_CHANNELS = []                
                     for ch in OPENED_CHANNELS.channels:
-                        name = self.get_country_name(ch.name)
+                        # Get country name
+                        ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                        ch_country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in ch_flagEmoji.lower())
+                        ch_country_name = countries[ch_country_code]
+                        
                         if channel_name.startswith("🔴"):
-                            RED_CHANNELS.append(name)
+                            RED_CHANNELS.append(ch_country_name)
                         else:
-                            NON_RED_CHANNELS.append(name)
+                            NON_RED_CHANNELS.append(ch_country_name)
                     
                     NON_RED_CHANNELS.append(country_name)
                     NON_RED_CHANNELS.sort()
@@ -347,9 +352,12 @@ class Storehouse(commands.Cog):
                 else:
                     RED_CHANNELS = []                    
                     for ch in OPENED_CHANNELS.channels:
+                        # Get country name
+                        ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                        ch_country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in ch_flagEmoji.lower())
+                        ch_country_name = countries[ch_country_code]
                         if channel_name.startswith("🔴"):
-                            name = self.get_country_name(ch.name)
-                            RED_CHANNELS.append(name)
+                            RED_CHANNELS.append(ch_country_name)
                             
                     RED_CHANNELS.append(country_name)
                     print(RED_CHANNELS)
