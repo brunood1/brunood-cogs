@@ -330,7 +330,7 @@ class Storehouse(commands.Cog):
                     ch_country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in ch_flagEmoji.lower())
                     ch_country_name = countries[ch_country_code]
                     
-                    if channel_name.startswith("🔴"):
+                    if ch.name.startswith("🔴"):
                         RED_CHANNELS.append(ch_country_name)
                     else:
                         NON_RED_CHANNELS.append(ch_country_name)
