@@ -313,15 +313,17 @@ class Storehouse(commands.Cog):
             COUNTRY = False
         
         if channel in STOREHOUSE.channels:
-            # can't make storehouse channels live
+            # Can't make storehouse channels live
             notice = self.CANT_GO_LIVE
         else: 
             if COUNTRY == True and channel in OPENED_CHANNELS.channels:
+                # Channel needs to be a country channel in the national category
                 
                 # Get country name
                 country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in flagEmoji.lower())
                 country_name = countries[country_code]
                 
+                # Organize channels into RED and NON-RED (Necessary for sorting)
                 RED_CHANNELS = []    
                 NON_RED_CHANNELS = []                
                 for ch in OPENED_CHANNELS.channels:
@@ -335,13 +337,12 @@ class Storehouse(commands.Cog):
                     else:
                         NON_RED_CHANNELS.append(ch_country_name)
                 
+                # If the channel already has a red circle, it's gonna be removed
                 if channel.name.startswith("🔴"):
+                    # Add the channel to it's new list and sort it
                     NON_RED_CHANNELS.append(country_name)
-                    print(RED_CHANNELS)
-                    print(NON_RED_CHANNELS)
                     NON_RED_CHANNELS.sort()
-                    print(RED_CHANNELS)
-                    print(NON_RED_CHANNELS)
+                    # Get its index so the bot knows where to place it in the list
                     index = len(RED_CHANNELS) + NON_RED_CHANNELS.index(country_name) - 1
                     
                     try:
@@ -352,14 +353,14 @@ class Storehouse(commands.Cog):
                         notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
                     else:
                         notice = self.ADD_RED_CIRCLE.format(mention)
-                            
-                else:                            
+                 
+                # If the channel doesn't have a red circle, it's gonna be added           
+                else:          
+                    # Add the channel to it's new list and sort it                  
                     RED_CHANNELS.append(country_name)
-                    print(RED_CHANNELS)
                     RED_CHANNELS.sort()
-                    print(RED_CHANNELS)
+                    # Get its index so the bot knows where to place it in the list
                     index = RED_CHANNELS.index(country_name)
-                    print(index)
                     
                     try:
                         await channel.edit(name="🔴 {}".format(channel_name))
@@ -371,11 +372,11 @@ class Storehouse(commands.Cog):
                         notice = self.ADD_RED_CIRCLE.format(mention)
                         
                 
-                
+            # If the channel is not a country channel
             else:
                 if channel_name.startswith("🔴"):
                     try:
-                        await channel.edit(name="{}".format(channel_name[1:]))
+                        await channel.edit(name=channel_name[1:])
                     except discord.Forbidden:  # Manage channel perms required.
                         perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                         notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
