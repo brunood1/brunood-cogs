@@ -16,6 +16,10 @@ data_folder = os.path.join(current_folder, "data")  # Get its subdirectory named
 json_filepath = os.path.join(data_folder, "test.json")  # Get the "dict.json" in the subdirectory.
 with open(json_filepath, "r") as f:  # Load the data (read-only) from the aforementioned file.
     ids = json.load(f)
+    
+json_filepath = os.path.join(data_folder, "countries.json")  # Get the "dict.json" in the subdirectory.
+with open(json_filepath, "r") as f:  # Load the data (read-only) from the aforementioned file.
+    countries = json.load(f)
 
 
 class Storehouse(commands.Cog):
@@ -266,7 +270,13 @@ class Storehouse(commands.Cog):
         flag = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
         
         if flag != "":
-            await ctx.reply("{} is a country channel".format(channel.mention), mention_author=False)
+            # Convert flag emote characters such as "🇬" to proper latin letters (e.g. "g").
+            INDICATOR_CONVERT = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
+            
+            country_code = "".join(self.INDICATOR_CONVERT.get(c, c) for c in flag.lower())
+            country_name = countries[country_code]
+            
+            await ctx.reply("{} is a country channel ({},{})".format(channel.mention, country_name, flag), mention_author=False)
         else:
             await ctx.reply("{} is not a country channel".format(channel.mention), mention_author=False)
         
