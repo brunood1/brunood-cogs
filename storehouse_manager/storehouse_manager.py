@@ -337,7 +337,11 @@ class Storehouse(commands.Cog):
                 
                 if channel.name.startswith("🔴"):
                     NON_RED_CHANNELS.append(country_name)
+                    print(RED_CHANNELS)
+                    print(NON_RED_CHANNELS)
                     NON_RED_CHANNELS.sort()
+                    print(RED_CHANNELS)
+                    print(NON_RED_CHANNELS)
                     index = len(RED_CHANNELS) + NON_RED_CHANNELS.index(country_name) - 1
                     
                     try:
