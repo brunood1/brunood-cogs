@@ -323,7 +323,7 @@ class Storehouse(commands.Cog):
                 if channel.name.startswith("🔴"):
                     RED_CHANNELS = []    
                     NON_RED_CHANNELS = []                
-                    for ch in OPENED_CHANNELS:
+                    for ch in OPENED_CHANNELS.channels:
                         name = self.get_country_name(ch.name)
                         if channel_name.startswith("🔴"):
                             RED_CHANNELS.append(name)
@@ -345,7 +345,7 @@ class Storehouse(commands.Cog):
                             
                 else:
                     RED_CHANNELS = []                    
-                    for ch in OPENED_CHANNELS:
+                    for ch in OPENED_CHANNELS.channels:
                         if channel_name.startswith("🔴"):
                             name = self.get_country_name(ch.name)
                             RED_CHANNELS.append(name)
