@@ -309,11 +309,11 @@ class Storehouse(commands.Cog):
         else:
             COUNTRY = False
         
-        if channel in STOREHOUSE:
+        if channel in STOREHOUSE.channels:
             # can't make storehouse channels live
             notice = self.CANT_GO_LIVE
         else: 
-            if COUNTRY == True and channel in OPENED_CHANNELS:
+            if COUNTRY == True and channel in OPENED_CHANNELS.channels:
                 
                 # Get country name
                 INDICATOR_CONVERT = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
