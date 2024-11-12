@@ -273,7 +273,7 @@ class Storehouse(commands.Cog):
             # Convert flag emote characters such as "🇬" to proper latin letters (e.g. "g").
             INDICATOR_CONVERT = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
             
-            country_code = "".join(self.INDICATOR_CONVERT.get(c, c) for c in flag.lower())
+            country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in flag.lower())
             country_name = countries[country_code]
             
             await ctx.reply("{} is a country channel ({},{})".format(channel.mention, country_name, flag), mention_author=False)
