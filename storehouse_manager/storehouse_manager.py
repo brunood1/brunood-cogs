@@ -322,26 +322,26 @@ class Storehouse(commands.Cog):
                 country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in flagEmoji.lower())
                 country_name = countries[country_code]
                 
-                if channel.name.startswith("🔴"):
-                    RED_CHANNELS = []    
-                    NON_RED_CHANNELS = []                
-                    for ch in OPENED_CHANNELS.channels:
-                        # Get country name
-                        ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                        ch_country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in ch_flagEmoji.lower())
-                        ch_country_name = countries[ch_country_code]
-                        
-                        if channel_name.startswith("🔴"):
-                            RED_CHANNELS.append(ch_country_name)
-                        else:
-                            NON_RED_CHANNELS.append(ch_country_name)
+                RED_CHANNELS = []    
+                NON_RED_CHANNELS = []                
+                for ch in OPENED_CHANNELS.channels:
+                    # Get country name
+                    ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                    ch_country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in ch_flagEmoji.lower())
+                    ch_country_name = countries[ch_country_code]
                     
+                    if channel_name.startswith("🔴"):
+                        RED_CHANNELS.append(ch_country_name)
+                    else:
+                        NON_RED_CHANNELS.append(ch_country_name)
+                
+                if channel.name.startswith("🔴"):
                     NON_RED_CHANNELS.append(country_name)
                     NON_RED_CHANNELS.sort()
                     index = len(RED_CHANNELS) + NON_RED_CHANNELS.index(country_name) - 1
                     
                     try:
-                        await channel.edit(name="🔴 {}".format(channel_name))
+                        await channel.edit(name=channel_name[1:])
                         await channel.move(beginning=True, offset=index)
                     except discord.Forbidden:  # Manage channel perms required.
                         perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
@@ -349,22 +349,14 @@ class Storehouse(commands.Cog):
                     else:
                         notice = self.ADD_RED_CIRCLE.format(mention)
                             
-                else:
-                    RED_CHANNELS = []                    
-                    for ch in OPENED_CHANNELS.channels:
-                        # Get country name
-                        ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                        ch_country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in ch_flagEmoji.lower())
-                        ch_country_name = countries[ch_country_code]
-                        if channel_name.startswith("🔴"):
-                            RED_CHANNELS.append(ch_country_name)
-                            
+                else:                            
                     RED_CHANNELS.append(country_name)
                     print(RED_CHANNELS)
                     RED_CHANNELS.sort()
                     print(RED_CHANNELS)
                     index = RED_CHANNELS.index(country_name)
                     print(index)
+                    
                     try:
                         await channel.edit(name="🔴 {}".format(channel_name))
                         await channel.move(beginning=True, offset=index)
