@@ -352,8 +352,11 @@ class Storehouse(commands.Cog):
                             RED_CHANNELS.append(name)
                             
                     RED_CHANNELS.append(country_name)
+                    print(RED_CHANNELS)
                     RED_CHANNELS.sort()
+                    print(RED_CHANNELS)
                     index = RED_CHANNELS.index(country_name)
+                    print(index)
                     try:
                         await channel.edit(name="🔴 {}".format(channel_name))
                         await channel.move(beginning=True, offset=index)
