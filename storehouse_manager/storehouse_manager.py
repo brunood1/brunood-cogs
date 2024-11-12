@@ -46,6 +46,14 @@ class Storehouse(commands.Cog):
         super().__init__()
         self.bot = bot
 
+    def get_country_name(self, channel_name):
+        flag = "".join(c for c in channel_name if "🇦" <= c <= "🇿")
+        INDICATOR_CONVERT = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
+        country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in flag.lower())
+        country_name = countries[country_code]
+        
+        return country_name
+    
     # Commands        
     @commands.command()
     @commands.guild_only()
@@ -279,6 +287,104 @@ class Storehouse(commands.Cog):
             await ctx.reply("{} is a country channel ({},{})".format(channel.mention, country_name, flag), mention_author=False)
         else:
             await ctx.reply("{} is not a country channel".format(channel.mention), mention_author=False)
+            
+    @commands.command()  
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_channels=True)
+    async def red_circle_new(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel | discord.Thread):
+        
+        STOREHOUSE = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
+        OPENED_CHANNELS = discord.utils.get(channel.guild.categories, id=1198634992796975115)
+        
+        flagEmoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
+        
+        mention = channel.mention
+        
+        COUNTRY = False
+        if flagEmoji != "":
+            COUNTRY = True
+        else:
+            COUNTRY = False
+        
+        if channel in STOREHOUSE:
+            # can't make storehouse channels live
+            notice = self.CANT_GO_LIVE
+        else: 
+            if COUNTRY == True and channel in OPENED_CHANNELS:
+                
+                # Get country name
+                INDICATOR_CONVERT = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
+                country_code = "".join(INDICATOR_CONVERT.get(c, c) for c in flagEmoji.lower())
+                country_name = countries[country_code]
+                
+                if channel.name.startswith("🔴"):
+                    RED_CHANNELS = []    
+                    NON_RED_CHANNELS = []                
+                    for ch in OPENED_CHANNELS:
+                        name = self.get_country_name(ch.name)
+                        if channel_name.startswith("🔴"):
+                            RED_CHANNELS.append(name)
+                        else:
+                            NON_RED_CHANNELS.append(name)
+                    
+                    NON_RED_CHANNELS.append(country_name)
+                    NON_RED_CHANNELS.sort()
+                    index = len(RED_CHANNELS) + NON_RED_CHANNELS.index(country_name) - 1
+                    
+                    try:
+                        await channel.edit(name="🔴 {}".format(channel_name))
+                        await channel.move(beginning=True, offset=index)
+                    except discord.Forbidden:  # Manage channel perms required.
+                        perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                        notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                    else:
+                        notice = self.ADD_RED_CIRCLE.format(mention)
+                            
+                else:
+                    RED_CHANNELS = []                    
+                    for ch in OPENED_CHANNELS:
+                        if channel_name.startswith("🔴"):
+                            name = self.get_country_name(ch.name)
+                            RED_CHANNELS.append(name)
+                            
+                    RED_CHANNELS.append(country_name)
+                    RED_CHANNELS.sort()
+                    index = RED_CHANNELS.index(country_name)
+                    try:
+                        await channel.edit(name="🔴 {}".format(channel_name))
+                        await channel.move(beginning=True, offset=index)
+                    except discord.Forbidden:  # Manage channel perms required.
+                        perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                        notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                    else:
+                        notice = self.ADD_RED_CIRCLE.format(mention)
+                        
+                
+                
+            else:
+                channel_name = channel.name
+                if channel_name.startswith("🔴"):
+                    try:
+                        await channel.edit(name="{}".format(channel_name[1:]))
+                    except discord.Forbidden:  # Manage channel perms required.
+                        perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                        notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                    else:
+                        notice = self.REMOVE_RED_CIRCLE.format(mention)
+                else:
+                    try:
+                        await channel.edit(name="🔴 {}".format(channel_name))
+                    except discord.Forbidden:  # Manage channel perms required.
+                        perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
+                        notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
+                    else:
+                        notice = self.ADD_RED_CIRCLE.format(mention)
+                        
+        await ctx.reply(notice, mention_author=False) 
+                
         
     # Config
     async def red_delete_data_for_user(self, *, _requester, _user_id):
