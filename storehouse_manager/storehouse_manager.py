@@ -302,6 +302,7 @@ class Storehouse(commands.Cog):
         flagEmoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
         
         mention = channel.mention
+        channel_name = channel.name
         
         COUNTRY = False
         if flagEmoji != "":
@@ -365,7 +366,6 @@ class Storehouse(commands.Cog):
                 
                 
             else:
-                channel_name = channel.name
                 if channel_name.startswith("🔴"):
                     try:
                         await channel.edit(name="{}".format(channel_name[1:]))
