@@ -481,7 +481,7 @@ class Storehouse(commands.Cog):
                                 STOREHOUSE_CHANNELS.append(ch_country_name)
                                 
                         STOREHOUSE_CHANNELS.append(country_name)
-                        STOREHOUSE_CHANNELS.sort
+                        STOREHOUSE_CHANNELS.sort()
                         index = STOREHOUSE_CHANNELS.index(country_name)
                         
                         try:
