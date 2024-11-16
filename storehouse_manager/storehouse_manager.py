@@ -460,7 +460,7 @@ class Storehouse(commands.Cog):
                     else:
                         notice = self.MOVED_FROM_STOREHOUSE.format(mention)
                 else:
-                    notice = "Can't open this channel" # TODO: add this message as a variable
+                    notice = self.X + "Can't open this channel" # TODO: add this message as a variable
                     
             elif status == "close":
                 if channel in STOREHOUSE.channels:
@@ -468,7 +468,7 @@ class Storehouse(commands.Cog):
                 elif channel in OPENED_CHANNELS.channels:
                     # First thing is to check if the channel we're trying to close has a red circle
                     if channel_name.startswith("🔴"):
-                        notice = "Can't close live channels" # TODO: add this message as a variable
+                        notice = self.X + "Can't close live channels" # TODO: add this message as a variable
                     else:
                         # When we close a channel we need check its position in the storehouse
                         STOREHOUSE_CHANNELS = []
@@ -495,7 +495,7 @@ class Storehouse(commands.Cog):
                 
                 # If the channel is not on the opened channels list (ex: esc-main)        
                 else:
-                    notice = "Can't close this channel" # TODO: add this message as a variable
+                    notice = self.X + "Can't close this channel" # TODO: add this message as a variable
              
             # Wrong status       
             else:
