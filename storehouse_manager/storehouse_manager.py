@@ -62,26 +62,22 @@ class Storehouse(commands.Cog):
         STOREHOUSE = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
         OPENED_CHANNELS = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
-        flagEmoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
+        flag_emoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
         
         mention = channel.mention
         channel_name = channel.name
         
-        isCountry = False
-        if flagEmoji != "":
-            isCountry = True
-        else:
-            isCountry = False
+        is_country = False if flag_emoji == "" else True
         
         if channel in STOREHOUSE.channels:
             # Can't make storehouse channels live
             notice = self.CANT_GO_LIVE
         else: 
-            if isCountry == True and channel in OPENED_CHANNELS.channels:
+            if is_country == True and channel in OPENED_CHANNELS.channels:
                 # Channel needs to be a country channel in the national category
                 
                 # Get country name
-                country_code = "".join(self.indicatorConvert.get(c, c) for c in flagEmoji.lower())
+                country_code = "".join(self.indicatorConvert.get(c, c) for c in flag_emoji.lower())
                 country_name = countries[country_code]
                 
                 # Organize channels into RED and NON-RED (Necessary for sorting)
@@ -89,8 +85,8 @@ class Storehouse(commands.Cog):
                 non_red_channels = []                
                 for ch in OPENED_CHANNELS.channels:
                     # Get country name
-                    ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                    ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flagEmoji.lower())
+                    ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                    ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flag_emoji.lower())
                     ch_country_name = countries[ch_country_code]
                     
                     if ch.name.startswith("🔴"):
@@ -168,19 +164,15 @@ class Storehouse(commands.Cog):
         STOREHOUSE = discord.utils.get(channel.guild.categories, id=1198407644021522452) 
         OPENED_CHANNELS = discord.utils.get(channel.guild.categories, id=1198634992796975115)
         
-        flagEmoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
+        flag_emoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
         
         mention = channel.mention
         channel_name = channel.name
         
-        isCountry = False
-        if flagEmoji != "":
-            isCountry = True
-        else:
-            isCountry = False
+        is_country = False if flag_emoji == "" else True
         
-        if isCountry == True:    
-            country_code = "".join(self.indicatorConvert.get(c, c) for c in flagEmoji.lower())
+        if is_country == True:    
+            country_code = "".join(self.indicatorConvert.get(c, c) for c in flag_emoji.lower())
             country_name = countries[country_code]
             
             if status == "open":
@@ -195,8 +187,8 @@ class Storehouse(commands.Cog):
                     non_red_channels = []          
                     for ch in OPENED_CHANNELS.channels:
                         # Get country name
-                        ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                        ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flagEmoji.lower())
+                        ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                        ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flag_emoji.lower())
                         ch_country_name = countries[ch_country_code]
                         
                         if ch.name.startswith("🔴"):
@@ -229,18 +221,18 @@ class Storehouse(commands.Cog):
                         notice = self.X + "Can't close live channels" # TODO: add this message as a variable
                     else:
                         # When we close a channel we need check its position in the storehouse
-                        STOREHOUSE_CHANNELS = []
+                        storehouse_channels = []
                         for ch in STOREHOUSE.channels:
                             # Get country name
-                            ch_flagEmoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                            if ch_flagEmoji != "":
-                                ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flagEmoji.lower())
+                            ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                            if ch_flag_emoji != "":
+                                ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flag_emoji.lower())
                                 ch_country_name = countries[ch_country_code]
-                                STOREHOUSE_CHANNELS.append(ch_country_name)
+                                storehouse_channels.append(ch_country_name)
                                 
-                        STOREHOUSE_CHANNELS.append(country_name)
-                        STOREHOUSE_CHANNELS.sort()
-                        index = STOREHOUSE_CHANNELS.index(country_name)
+                        storehouse_channels.append(country_name)
+                        storehouse_channels.sort()
+                        index = storehouse_channels.index(country_name)
                         
                         try:
                             # Moves category
