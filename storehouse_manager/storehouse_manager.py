@@ -43,7 +43,7 @@ class Storehouse(commands.Cog):
     ONLY_COUNTRIES = "Can only open/close country channels"
     NOT_OPEN_OR_CLOSE = X + "You can only open or close a channel"
     
-    indicatorConvert = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
+    indicator_convert = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
 
     def __init__(self, bot: Red):
         super().__init__()
@@ -77,7 +77,7 @@ class Storehouse(commands.Cog):
                 # Channel needs to be a country channel in the national category
                 
                 # Get country name
-                country_code = "".join(self.indicatorConvert.get(c, c) for c in flag_emoji.lower())
+                country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
                 country_name = countries[country_code]
                 
                 # Organize channels into RED and NON-RED (Necessary for sorting)
@@ -86,7 +86,7 @@ class Storehouse(commands.Cog):
                 for ch in OPENED_CHANNELS.channels:
                     # Get country name
                     ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                    ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flag_emoji.lower())
+                    ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
                     ch_country_name = countries[ch_country_code]
                     
                     if ch.name.startswith("🔴"):
@@ -109,8 +109,7 @@ class Storehouse(commands.Cog):
                         perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                         notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
                     else:
-                        notice = self.ADD_RED_CIRCLE.format(mention)
-                 
+                        notice = self.REMOVE_RED_CIRCLE.format(mention)
                 # If the channel doesn't have a red circle, it's gonna be added           
                 else:          
                     # Add the channel to it's new list and sort it                  
@@ -126,9 +125,7 @@ class Storehouse(commands.Cog):
                         perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
                         notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
                     else:
-                        notice = self.ADD_RED_CIRCLE.format(mention)
-                        
-                
+                        notice = self.ADD_RED_CIRCLE.format(mention)       
             # If the channel is not a country channel then simply add or remove the red circle
             else:
                 if channel_name.startswith("🔴"):
@@ -172,7 +169,7 @@ class Storehouse(commands.Cog):
         is_country = False if flag_emoji == "" else True
         
         if is_country == True:    
-            country_code = "".join(self.indicatorConvert.get(c, c) for c in flag_emoji.lower())
+            country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
             country_name = countries[country_code]
             
             if status == "open":
@@ -188,7 +185,7 @@ class Storehouse(commands.Cog):
                     for ch in OPENED_CHANNELS.channels:
                         # Get country name
                         ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                        ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flag_emoji.lower())
+                        ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
                         ch_country_name = countries[ch_country_code]
                         
                         if ch.name.startswith("🔴"):
@@ -210,8 +207,7 @@ class Storehouse(commands.Cog):
                     else:
                         notice = self.MOVED_FROM_STOREHOUSE.format(mention)
                 else:
-                    notice = self.X + "Can't open this channel" # TODO: add this message as a variable
-                    
+                    notice = self.X + "Can't open this channel" # TODO: add this message as a variable  
             elif status == "close":
                 if channel in STOREHOUSE.channels:
                     notice = self.CHANNEL_CLOSED
@@ -226,7 +222,7 @@ class Storehouse(commands.Cog):
                             # Get country name
                             ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
                             if ch_flag_emoji != "":
-                                ch_country_code = "".join(self.indicatorConvert.get(c, c) for c in ch_flag_emoji.lower())
+                                ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
                                 ch_country_name = countries[ch_country_code]
                                 storehouse_channels.append(ch_country_name)
                                 
@@ -246,16 +242,13 @@ class Storehouse(commands.Cog):
                 # If the channel is not on the opened channels list (ex: esc-main)        
                 else:
                     notice = self.X + "Can't close this channel" # TODO: add this message as a variable
-             
             # Wrong status       
             else:
                 notice = self.NOT_OPEN_OR_CLOSE
-
         # Not a country channel
         else:
             notice = self.ONLY_COUNTRIES
             
-        
         await ctx.reply(notice, mention_author=False) 
                 
     # Config
