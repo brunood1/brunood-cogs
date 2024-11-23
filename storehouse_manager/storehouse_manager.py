@@ -88,8 +88,6 @@ class Storehouse(commands.Cog):
                 country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
                 if country_code not in countries.keys():
                     notice = self.COUNTRY_NOT_IN_THE_LIST
-                elif len(country_code) != 2:
-                    notice = self.COUNTRY_NOT_IN_THE_LIST # TODO: Make a more apropriate message
                 else:
                     country_name = countries[country_code]
                     
