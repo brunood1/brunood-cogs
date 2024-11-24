@@ -281,8 +281,9 @@ class Storehouse(commands.Cog):
                                 ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
                                 if ch_flag_emoji != "":
                                     ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                                    ch_country_name = self.countries[ch_country_code]
-                                    storehouse_channels.append(ch_country_name)
+                                    if ch_country_code in self.countries.keys():
+                                        ch_country_name = self.countries[ch_country_code]
+                                        storehouse_channels.append(ch_country_name)
                                     
                             storehouse_channels.append(country_name)
                             storehouse_channels.sort()
