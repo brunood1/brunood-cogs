@@ -1,22 +1,11 @@
 # Required by Red.
 import discord
 import typing
-from redbot.core import commands
+from redbot.core import commands, Config
 from redbot.core.bot import Red
 
 import json
 import os.path
-
-# Configure files.
-current_folder = os.path.dirname(os.path.realpath(__file__))  # Get the directory in which this codefile is located.
-data_folder = os.path.join(current_folder, "data")  # Get its subdirectory named "data".
-
-# ...
-    
-json_filepath = os.path.join(data_folder, "countries.json")  # Get the "dict.json" in the subdirectory.
-with open(json_filepath, "r") as f:  # Load the data (read-only) from the aforementioned file.
-    countries = json.load(f)
-
 
 class Storehouse(commands.Cog):
     """Commands for managing the national final channels in the Eurovision Discord"""
@@ -50,6 +39,23 @@ class Storehouse(commands.Cog):
     def __init__(self, bot: Red):
         super().__init__()
         self.bot = bot
+        
+        # Configure files.
+        current_folder = os.path.dirname(os.path.realpath(__file__))  # Get the directory in which this codefile is located.
+        data_folder = os.path.join(current_folder, "data")  # Get its subdirectory named "data".
+            
+        json_filepath = os.path.join(data_folder, "countries.json")  # Get the "dict.json" in the subdirectory.
+        with open(json_filepath, "r") as f:  # Load the data (read-only) from the aforementioned file.
+            self.countries: dict[str, str] = json.load(f)
+            
+        # Your favourite number as identifier
+        self.config = Config.get_conf(self, identifier=143234942894832, force_registration=True)
+        self.config.register_guild(
+            storehouse_category_id=None,
+            live_category_id=None,
+        )
+
+    
     
     def channel_permission_error(self, channel, mention):
         perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
@@ -87,10 +93,10 @@ class Storehouse(commands.Cog):
                 # Get country name
                 country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
                 # The country list doesn't have every country, so check for that
-                if country_code not in countries.keys():
+                if country_code not in self.countries.keys():
                     notice = self.COUNTRY_NOT_IN_THE_LIST
                 else:
-                    country_name = countries[country_code]
+                    country_name = self.countries[country_code]
                     
                     # Organize channels into RED and NON-RED (Necessary for sorting)
                     red_channels = []    
@@ -99,7 +105,7 @@ class Storehouse(commands.Cog):
                         # Get country name
                         ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
                         ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                        ch_country_name = countries[ch_country_code]
+                        ch_country_name = self.countries[ch_country_code]
                                 
                         if ch.name.startswith(self.LIVE_INDICATOR):
                             red_channels.append(ch_country_name)
@@ -177,10 +183,10 @@ class Storehouse(commands.Cog):
         
         if is_country == True:    
             country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
-            if country_code not in countries.keys():
+            if country_code not in self.countries.keys():
                 notice = self.COUNTRY_NOT_IN_THE_LIST
             else:
-                country_name = countries[country_code]
+                country_name = self.countries[country_code]
                 
                 if status == "open":
                     if channel in OPENED_CHANNELS.channels:
@@ -196,7 +202,7 @@ class Storehouse(commands.Cog):
                             # Get country name
                             ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
                             ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                            ch_country_name = countries[ch_country_code]
+                            ch_country_name = self.countries[ch_country_code]
                             
                             if ch.name.startswith(self.LIVE_INDICATOR):
                                 red_channels.append(ch_country_name)
@@ -232,7 +238,7 @@ class Storehouse(commands.Cog):
                                 ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
                                 if ch_flag_emoji != "":
                                     ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                                    ch_country_name = countries[ch_country_code]
+                                    ch_country_name = self.countries[ch_country_code]
                                     storehouse_channels.append(ch_country_name)
                                     
                             storehouse_channels.append(country_name)
