@@ -177,78 +177,81 @@ class Storehouse(commands.Cog):
         
         if is_country == True:    
             country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
-            country_name = countries[country_code]
-            
-            if status == "open":
-                if channel in OPENED_CHANNELS.channels:
-                    # Can't open a channel that is already open
-                    notice = self.CHANNEL_OPENED.format(mention)
-                elif channel in STOREHOUSE.channels:
-                    # When we move a channel to the opened channels category, we want them to be ordered alphabetically
-                    # So, we first need to check where we should place the channel
-                    # For that we need to consider two things, the currently opened channels with and without a red circle separately
-                    red_channels = []    
-                    non_red_channels = []          
-                    for ch in OPENED_CHANNELS.channels:
-                        # Get country name
-                        ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                        ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                        ch_country_name = countries[ch_country_code]
-                        
-                        if ch.name.startswith(self.LIVE_INDICATOR):
-                            red_channels.append(ch_country_name)
-                        else:
-                            non_red_channels.append(ch_country_name)
-                            
-                    # Gets index of the channel
-                    non_red_channels.append(country_name)
-                    non_red_channels.sort()
-                    index = len(red_channels) + non_red_channels.index(country_name)
-                    
-                    try:
-                        # adds channel to the national category in the beginning and moves it to the index
-                        await channel.move(beginning=True, offset=index, category=OPENED_CHANNELS, sync_permissions=True)
-                    except discord.Forbidden:  # Manage channel perms required.
-                        notice = self.channel_permission_error(channel, mention)
-                    else:
-                        notice = self.MOVED_FROM_STOREHOUSE.format(mention)
-                else:
-                    notice = self.CANT_OPEN
-            elif status == "close":
-                if channel in STOREHOUSE.channels:
-                    notice = self.CHANNEL_CLOSED
-                elif channel in OPENED_CHANNELS.channels:
-                    # First thing is to check if the channel we're trying to close has a red circle
-                    if channel_name.startswith(self.LIVE_INDICATOR):
-                        notice = self.CANT_CLOSE_LIVE
-                    else:
-                        # When we close a channel we need check its position in the storehouse
-                        storehouse_channels = []
-                        for ch in STOREHOUSE.channels:
+            if country_code not in self.countries.keys():
+                notice = self.COUNTRY_NOT_IN_THE_LIST
+            else:
+                country_name = countries[country_code]
+                
+                if status == "open":
+                    if channel in OPENED_CHANNELS.channels:
+                        # Can't open a channel that is already open
+                        notice = self.CHANNEL_OPENED.format(mention)
+                    elif channel in STOREHOUSE.channels:
+                        # When we move a channel to the opened channels category, we want them to be ordered alphabetically
+                        # So, we first need to check where we should place the channel
+                        # For that we need to consider two things, the currently opened channels with and without a red circle separately
+                        red_channels = []    
+                        non_red_channels = []          
+                        for ch in OPENED_CHANNELS.channels:
                             # Get country name
                             ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                            if ch_flag_emoji != "":
-                                ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                                ch_country_name = countries[ch_country_code]
-                                storehouse_channels.append(ch_country_name)
+                            ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
+                            ch_country_name = countries[ch_country_code]
+                            
+                            if ch.name.startswith(self.LIVE_INDICATOR):
+                                red_channels.append(ch_country_name)
+                            else:
+                                non_red_channels.append(ch_country_name)
                                 
-                        storehouse_channels.append(country_name)
-                        storehouse_channels.sort()
-                        index = storehouse_channels.index(country_name)
+                        # Gets index of the channel
+                        non_red_channels.append(country_name)
+                        non_red_channels.sort()
+                        index = len(red_channels) + non_red_channels.index(country_name)
                         
                         try:
-                            # Moves category
-                            await channel.move(beginning=True, offset=index, category=STOREHOUSE, sync_permissions=True)
+                            # adds channel to the national category in the beginning and moves it to the index
+                            await channel.move(beginning=True, offset=index, category=OPENED_CHANNELS, sync_permissions=True)
                         except discord.Forbidden:  # Manage channel perms required.
                             notice = self.channel_permission_error(channel, mention)
                         else:
-                            notice = self.MOVED_TO_STOREHOUSE.format(mention)
-                # If the channel is not on the opened channels list (ex: esc-main)        
+                            notice = self.MOVED_FROM_STOREHOUSE.format(mention)
+                    else:
+                        notice = self.CANT_OPEN
+                elif status == "close":
+                    if channel in STOREHOUSE.channels:
+                        notice = self.CHANNEL_CLOSED
+                    elif channel in OPENED_CHANNELS.channels:
+                        # First thing is to check if the channel we're trying to close has a red circle
+                        if channel_name.startswith(self.LIVE_INDICATOR):
+                            notice = self.CANT_CLOSE_LIVE
+                        else:
+                            # When we close a channel we need check its position in the storehouse
+                            storehouse_channels = []
+                            for ch in STOREHOUSE.channels:
+                                # Get country name
+                                ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                                if ch_flag_emoji != "":
+                                    ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
+                                    ch_country_name = countries[ch_country_code]
+                                    storehouse_channels.append(ch_country_name)
+                                    
+                            storehouse_channels.append(country_name)
+                            storehouse_channels.sort()
+                            index = storehouse_channels.index(country_name)
+                            
+                            try:
+                                # Moves category
+                                await channel.move(beginning=True, offset=index, category=STOREHOUSE, sync_permissions=True)
+                            except discord.Forbidden:  # Manage channel perms required.
+                                notice = self.channel_permission_error(channel, mention)
+                            else:
+                                notice = self.MOVED_TO_STOREHOUSE.format(mention)
+                    # If the channel is not on the opened channels list (ex: esc-main)        
+                    else:
+                        notice = self.CANT_CLOSE
+                # Wrong status       
                 else:
-                    notice = self.CANT_CLOSE
-            # Wrong status       
-            else:
-                notice = self.NOT_OPEN_OR_CLOSE
+                    notice = self.NOT_OPEN_OR_CLOSE
         # Not a country channel
         else:
             notice = self.ONLY_COUNTRIES
