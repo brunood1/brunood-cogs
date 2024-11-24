@@ -45,17 +45,17 @@ class Storehouse(commands.Cog):
     
     LIVE_INDICATOR = "🔴"
     
+    indicator_convert = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
+    
+    def __init__(self, bot: Red):
+        super().__init__()
+        self.bot = bot
+    
     def channel_permission_error(self, channel, mention):
         perm_needed = "Channel" if isinstance(channel, discord.TextChannel) else "Thread"
         notice = self.CHANNEL_NO_PERMS.format(perm_needed, mention)
         
         return notice
-    
-    indicator_convert = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
-
-    def __init__(self, bot: Red):
-        super().__init__()
-        self.bot = bot
     
     # Commands                
     @commands.command()  
@@ -86,6 +86,7 @@ class Storehouse(commands.Cog):
                 
                 # Get country name
                 country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
+                # The country list doesn't have every country, so check for that
                 if country_code not in countries.keys():
                     notice = self.COUNTRY_NOT_IN_THE_LIST
                 else:
