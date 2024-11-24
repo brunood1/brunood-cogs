@@ -131,33 +131,29 @@ class Storehouse(commands.Cog):
                 
                 # Get country name
                 country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
-                # The country list doesn't have every country, so check for that
-                if country_code not in self.countries.keys():
-                    notice = self.COUNTRY_NOT_IN_THE_LIST
-                    country_name = country_code
-                else:
-                    country_name = self.countries[country_code]
-                    
-                    # Organize channels into RED and NON-RED (Necessary for sorting)
-                    red_channels = []    
-                    non_red_channels = []                
-                    for ch in opened_cat.channels:
-                        # Get country name
-                        ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                        ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                        ch_country_name = self.countries[ch_country_code]
-                                
-                        if ch.name.startswith(self.LIVE_INDICATOR):
-                            red_channels.append(ch_country_name)
-                        else:
-                            non_red_channels.append(ch_country_name)
+                
+                country_sort_key = self.countries.get(country_code, country_code)
+                
+                # Organize channels into RED and NON-RED (Necessary for sorting)
+                red_channels = []    
+                non_red_channels = []                
+                for ch in opened_cat.channels:
+                    # Get country name
+                    ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
+                    ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
+                    ch_sort_key = self.countries.get(ch_country_code, ch_country_code)
+                            
+                    if ch.name.startswith(self.LIVE_INDICATOR):
+                        red_channels.append(ch_sort_key)
+                    else:
+                        non_red_channels.append(ch_sort_key)
                 # If the channel already has a red circle, it's gonna be removed
                 if channel.name.startswith(self.LIVE_INDICATOR):
                     # Add the channel to it's new list and sort it
-                    non_red_channels.append(country_name)
+                    non_red_channels.append(country_sort_key)
                     non_red_channels.sort()
                     # Get its index so the bot knows where to place it in the list
-                    index = len(red_channels) + non_red_channels.index(country_name) - 1
+                    index = len(red_channels) + non_red_channels.index(country_sort_key) - 1
                     
                     try:
                         await channel.edit(name=channel_name[1:])
@@ -169,10 +165,10 @@ class Storehouse(commands.Cog):
                 # If the channel doesn't have a red circle, it's gonna be added           
                 else:          
                     # Add the channel to it's new list and sort it                  
-                    red_channels.append(country_name)
+                    red_channels.append(country_sort_key)
                     red_channels.sort()
                     # Get its index so the bot knows where to place it in the list
-                    index = red_channels.index(country_name)
+                    index = red_channels.index(country_sort_key)
                     
                     try:
                         await channel.edit(name=self.LIVE_INDICATOR + channel_name)
