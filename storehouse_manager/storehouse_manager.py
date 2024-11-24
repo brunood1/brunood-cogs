@@ -25,7 +25,7 @@ class Storehouse(commands.Cog):
     CHANNEL_OPENED = "Channel {} is already opened"
     CHANNEL_CLOSED = "Channel {} is already closed"
     CANT_GO_LIVE = X + "Archived channels cannot go live"
-    ONLY_COUNTRIES = "Can only open/close country channels"
+    ONLY_COUNTRIES = X + "Can only open/close country channels"
     NOT_OPEN_OR_CLOSE = X + "You can only open or close a channel"
     CANT_OPEN = X + "Can't open this channel"
     CANT_CLOSE = X + "Can't close this channel"
@@ -134,6 +134,7 @@ class Storehouse(commands.Cog):
                 # The country list doesn't have every country, so check for that
                 if country_code not in self.countries.keys():
                     notice = self.COUNTRY_NOT_IN_THE_LIST
+                    country_name = country_code
                 else:
                     country_name = self.countries[country_code]
                     
