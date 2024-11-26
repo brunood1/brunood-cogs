@@ -98,103 +98,7 @@ class Storehouse(commands.Cog):
         await self.config.guild(gld).opened_category_id.set(category.id)
         await ctx.tick()
     
-    # Commands                
-    @commands.command()  
-    @commands.guild_only()
-    @commands.admin_or_permissions(manage_channels=True)
-    async def red_circle(
-        self,
-        ctx: commands.Context,
-        channel: discord.TextChannel | discord.Thread):
-        """Adds or removes :red_circle: from a channel name"""
-        
-        gld = ctx.guild
-        storehouse_id = await self.config.guild(gld).storehouse_category_id()
-        opened_id = await self.config.guild(gld).opened_category_id()
-        
-        storehouse_cat = discord.utils.get(channel.guild.categories, id=storehouse_id) 
-        opened_cat = discord.utils.get(channel.guild.categories, id=opened_id)
-        
-        flag_emoji = "".join(c for c in channel.name if "🇦" <= c <= "🇿")
-        
-        mention = channel.mention
-        channel_name = channel.name
-        
-        is_country = False if flag_emoji == "" else True
-        
-        if channel in storehouse_cat.channels:
-            # Can't make storehouse channels live
-            notice = self.CANT_GO_LIVE
-        else: 
-            # Channel needs to be a country channel in the national category
-            if is_country == True and channel in opened_cat.channels:           
-                # Get country name
-                country_code = "".join(self.indicator_convert.get(c, c) for c in flag_emoji.lower())
-                
-                country_sort_key = self.countries.get(country_code, country_code)
-                
-                # Organize channels into RED and NON-RED (Necessary for sorting)
-                red_channels = []    
-                non_red_channels = []                
-                for ch in opened_cat.channels:
-                    # Get country name
-                    ch_flag_emoji = "".join(c for c in ch.name if "🇦" <= c <= "🇿")
-                    ch_country_code = "".join(self.indicator_convert.get(c, c) for c in ch_flag_emoji.lower())
-                    ch_sort_key = self.countries.get(ch_country_code, ch_country_code)
-                            
-                    if ch.name.startswith(self.LIVE_INDICATOR):
-                        red_channels.append(ch_sort_key)
-                    else:
-                        non_red_channels.append(ch_sort_key)
-                # If the channel already has a red circle, it's gonna be removed
-                if channel.name.startswith(self.LIVE_INDICATOR):
-                    # Add the channel to it's new list and sort it
-                    non_red_channels.append(country_sort_key)
-                    non_red_channels.sort()
-                    # Get its index so the bot knows where to place it in the list
-                    index = len(red_channels) + non_red_channels.index(country_sort_key) - 1
-                    
-                    try:
-                        await channel.edit(name=channel_name[1:])
-                        await channel.move(beginning=True, offset=index)
-                    except discord.Forbidden:  # Manage channel perms required.
-                        notice = self.channel_permission_error(channel, mention)
-                    else:
-                        notice = self.REMOVE_RED_CIRCLE.format(mention)
-                # If the channel doesn't have a red circle, it's gonna be added           
-                else:          
-                    # Add the channel to it's new list and sort it                  
-                    red_channels.append(country_sort_key)
-                    red_channels.sort()
-                    # Get its index so the bot knows where to place it in the list
-                    index = red_channels.index(country_sort_key)
-                    
-                    try:
-                        await channel.edit(name=self.LIVE_INDICATOR + channel_name)
-                        await channel.move(beginning=True, offset=index)
-                    except discord.Forbidden:  # Manage channel perms required.
-                        notice = self.channel_permission_error(channel, mention)
-                    else:
-                        notice = self.ADD_RED_CIRCLE.format(mention)       
-            # If the channel is not a country channel then simply add or remove the red circle
-            else:
-                if channel_name.startswith(self.LIVE_INDICATOR):
-                    try:
-                        await channel.edit(name=channel_name[1:])
-                    except discord.Forbidden:  # Manage channel perms required.
-                        notice = self.channel_permission_error(channel, mention)
-                    else:
-                        notice = self.REMOVE_RED_CIRCLE.format(mention)
-                else:
-                    try:
-                        await channel.edit(name=self.LIVE_INDICATOR + channel_name)
-                    except discord.Forbidden:  # Manage channel perms required.
-                        notice = self.channel_permission_error(channel, mention)
-                    else:
-                        notice = self.ADD_RED_CIRCLE.format(mention)
-                        
-        await ctx.reply(notice, mention_author=False) 
-        
+    # Commands                       
     @commands.command()
     @commands.guild_only()
     @commands.admin_or_permissions(manage_channels=True)
@@ -300,12 +204,11 @@ class Storehouse(commands.Cog):
             notice = self.ONLY_COUNTRIES
             
         await ctx.reply(notice, mention_author=False) 
-        
-    # Commands                
+                    
     @commands.command()  
     @commands.guild_only()
     @commands.admin_or_permissions(manage_channels=True)
-    async def red_circle_n(
+    async def red_circle(
         self,
         ctx: commands.Context,
         status: bool,
