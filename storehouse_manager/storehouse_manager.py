@@ -13,8 +13,9 @@ class Storehouse(commands.Cog):
     __author__ = "brunood"
     __red_end_user_data_statement__ = "No user data is stored by this cog."
     
-    X = ":x: Error "
+    X = ":x: Error: "
 
+    LIVE_INDICATOR = "🔴"
     CHANNEL_RENAME = ":white_check_mark: Channel renamed to {}"
     CHANNEL_NO_PERMS = X + "I need 'Manage {}' permissions in {}"
     CHANNEL_NO_NAME = X + "The new name can't be blank"
@@ -31,8 +32,9 @@ class Storehouse(commands.Cog):
     CANT_CLOSE = X + "Can't close this channel"
     CANT_CLOSE_LIVE = X + "Can't close live channels"
     COUNTRY_NOT_IN_THE_LIST = X +  "Country not recognized"
+    HAS_NO_RED_CIRCLE = X + "This channel does not currently have a " + LIVE_INDICATOR
+    HAS_CIRCLE = X + "This channel is already live"
     
-    LIVE_INDICATOR = "🔴"
     
     indicator_convert = {chr(n): chr(x) for n, x in zip(range(127462, 127488), range(97, 123))}
     
@@ -237,7 +239,7 @@ class Storehouse(commands.Cog):
             if status == True:
                 # If the channel already has a red circle, there's nothing to add
                 if channel.name.startswith(self.LIVE_INDICATOR):
-                    notice = self.X + "This channel is already live"
+                    notice = self.HAS_CIRCLE
                 # If the channel doesn't have a red circle then we add it
                 else:
                     if is_country == True and channel in opened_cat.channels:           
@@ -330,7 +332,7 @@ class Storehouse(commands.Cog):
                             notice = self.REMOVE_RED_CIRCLE.format(mention)            
                 # If the channel doesn't have a red circle, there's nothing to remove
                 else:
-                    notice = self.X + "i don't know how to name this error tbh"
+                    notice = self.HAS_NO_RED_CIRCLE
                 
         
         await ctx.reply(notice, mention_author=False) 
