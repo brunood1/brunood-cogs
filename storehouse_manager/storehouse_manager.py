@@ -269,7 +269,7 @@ class Storehouse(commands.Cog):
                         index = red_channels.index(country_sort_key)
                         
                         try:
-                            await channel.edit(name=f"{self.LIVE_INDICATOR} {channel_name}")
+                            await channel.edit(name=f"{self.LIVE_INDICATOR}{channel_name}")
                             await channel.move(beginning=True, offset=index)
                         except discord.Forbidden:  # Manage channel perms required.
                             notice = self.channel_permission_error(channel, mention)
